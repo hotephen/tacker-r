@@ -38,6 +38,5 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
 
         vnf_id = vnf_dict['id']
         LOG.info('vnf %s is dead and the event should be notified to NFVO', vnf_id)
-        vnfm_utils.log_events(context, vnf_dict,
-                              constants.RES_EVT_MONITOR,
-                              "** invoked")
+        # def _notify_event():
+
