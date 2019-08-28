@@ -17,6 +17,7 @@ from oslo_log import log as logging
 from tacker.plugins.common import constants
 from tacker.vnfm.policy_actions import abstract_action
 from tacker.vnfm import utils as vnfm_utils
+from tacker import manager
 
 LOG = logging.getLogger(__name__)
 
@@ -39,4 +40,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         vnf_id = vnf_dict['id']
         LOG.info('vnf %s is dead and the event should be notified to NFVO', vnf_id)
         # def _notify_event():
-
+        nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
+        # To defined Check VNFFG
+        #vnffg_info = nfvo_plugin.get_vnffg_referensed_vnf()
+        nfvo_plugin.check_vnffg_vnf(vnf_id)
