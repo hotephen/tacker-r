@@ -31,9 +31,9 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
     def get_description(self):
         return 'Tacker VNF notify policy'
 
-    % Should define the below action
-    % When event ocurrs, VNFM only notify event with related infromation  (e.g., vnf_id) to NFVO
-    % Then, NFVO finds VNFFG which include the VNF and decides wether VNFFG should be deleted or changed.
+    # Should define the below action
+    # When event ocurrs, VNFM only notify event with related infromation  (e.g., vnf_id) to NFVO
+    # Then, NFVO finds VNFFG which include the VNF and decides wether VNFFG should be deleted or changed.
     def execute_action(self, plugin, context, vnf_dict, args):
 
         vnf_id = vnf_dict['id']
