@@ -68,7 +68,7 @@ class DriverManager(object):
         self._drivers[type_] = driver
 
     def invoke(self, type_, method_name, **kwargs):
-        driver = self._drivers[type_]
+        driver = self._drivers['type_']
         return getattr(driver, method_name)(**kwargs)
 
     def __getitem__(self, type_):
