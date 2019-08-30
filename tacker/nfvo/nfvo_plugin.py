@@ -982,3 +982,4 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
     def check_vnffg_vnf(self, vnf_id):
         # To find vnffg_number
         LOG.debug('find vnffg-id referenced by vnf %s', vnf_id)
+        LOG.debug('Vnffg-info is %s', get_vnffgs())
