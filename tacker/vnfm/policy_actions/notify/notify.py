@@ -38,9 +38,9 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
     def execute_action(self, plugin, context, vnf_dict, args):
 
         vnf_id = vnf_dict['id']
-        LOG.info('vnf %s is dead and the event should be notified to NFVO', vnf_id)
+        LOG.info('vnf id %s is dead and the event should be notified to NFVO', vnf_id)
         # def _notify_event():
         nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
         # To defined Check VNFFG
         #vnffg_info = nfvo_plugin.get_vnffg_referensed_vnf()
-        nfvo_plugin.check_vnffg_vnf(vnf_id)
+        nfvo_plugin.mark_event(vnf_id)

@@ -979,7 +979,14 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         return ns['id']
 
     @log.log
-    def check_vnffg_vnf(self, vnf_id):
+    def mark_event(self, vnf_id):
         # To find vnffg_number
-        LOG.debug('find vnffg-id referenced by vnf %s', vnf_id)
-        LOG.debug('Vnffg-info is %s', get_vnffgs())
+        LOG.Info('NFVO resecives the failure event of VNF %s', vnf_id)
+
+        def _get_vnffgs_from_vnf(vnf_id):
+            context = t_context.get_admin_context()
+            vnffgs = self.get_vnffgs(context)
+            LOG.Info('The referenced VNFFG ID is %s', vnffgs.get('id'))
+            self.delete_vnffg(vnffgs.get('id'))
+            LOG.Info('The referenced VNFFG ID :%s is deleted', vnffgs.get('id'))
+
