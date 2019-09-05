@@ -981,17 +981,17 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
     @log.log
     def mark_event(self, vnf_id):
         # To find vnffg_number
-        LOG.Info('NFVO resecives the failure event of VNF %s', vnf_id)
+        LOG.info('NFVO resecives the failure event of VNF %s', vnf_id)
 
-        #def _get_vnffgs_from_vnf(vnf_id):
-            #context = t_context.get_admin_context()
-            #vnffgs = self.get_vnffgs(context)
-            #for vnffg in vnfffgs
-            #    vnfs = vnffg.get('vnf_mapping')
-            #    for vnf in vnfs
-            #        if vnf.get('vnf_id') == vnf_id
-            #             LOG.Info('The referenced VNFFG ID is %s', vnffgs.get('id'))
-            #            event_vnffg_id = vnffg.get('vnffg_id')
-            #self.delete_vnffg(vnffgs.get('id'))
-            #LOG.Info('The referenced VNFFG ID :%s is deleted', vnffgs.get('id'))
+        def _get_vnffgs_from_vnf(vnf_id):
+            context = t_context.get_admin_context()
+            vnffgs = self.get_vnffgs(context)
+            for vnffg in vnfffgs
+                vnfs = vnffg.get('vnf_mapping')
+                for vnf in vnfs
+                    if vnf.get('vnf_id') == vnf_id
+                         LOG.info('The referenced VNFFG ID is %s', vnffgs.get('id'))
+                         event_vnffg_id = vnffg.get('vnffg_id')
+            self.delete_vnffg(event_vnffg_id)
+            LOG.Info('The referenced VNFFG ID :%s is deleted', vnffgs.get('id'))
 
