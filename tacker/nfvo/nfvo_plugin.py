@@ -986,7 +986,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         def _get_vnffgs_from_vnf(vnf_id):
             context = t_context.get_admin_context()
             vnffgs = self.get_vnffgs(context)
-            for vnffg in vnfffgs
+            for vnffg in vnffgs
                 vnfs = vnffg.get('vnf_mapping')
                 for vnf in vnfs
                     if vnf.get('vnf_id') == vnf_id
