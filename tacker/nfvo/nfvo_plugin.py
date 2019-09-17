@@ -983,7 +983,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         # To find vnffg_number
         LOG.info('NFVO resecives the failure event of VNF %s', vnf_id)
 
-        def _get_vnffgs_from_vnf(vnf_id):
+        def get_vnffgs_from_vnf(vnf_id):
             context = t_context.get_admin_context()
             vnffgs = self.get_vnffgs(context)
             for vnffg in vnffgs:
