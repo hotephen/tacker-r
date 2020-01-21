@@ -78,7 +78,8 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
             'monitor_interval', default=30,
             help=_('Interval to check for VIM health')),
     ]
-    cfg.CONF.register_opts(OPTS, 'nfvo_vim')
+    cfg.CONF.register_opts(OPTS , 'nfvo_vim')
+
 
     def __init__(self):
         super(NfvoPlugin, self).__init__()
@@ -979,19 +980,36 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         return ns['id']
 
     @log.log
-    def mark_event(self, vnf_id):
+    def mark_event(self, context, old_vnf_id, new_vnf_id):
         # To find vnffg_number
-        LOG.info('NFVO resecives the failure event of VNF %s', vnf_id)
+        LOG.info('NFVO resecives the failure event of VNF %s', old_vnf_id)
 
-        def get_vnffgs_from_vnf(vnf_id):
-            context = t_context.get_admin_context()
-            vnffgs = self.get_vnffgs(context)
-            for vnffg in vnffgs:
-                vnfs = vnffg.get('vnf_mapping')
-                for vnf in vnfs:
-                    if vnf.get('vnf_id') == vnf_id:
-                         LOG.info('The referenced VNFFG ID is %s', vnffgs.get('id'))
-                         event_vnffg_id = vnffg.get('vnffg_id')
-            self.delete_vnffg(event_vnffg_id)
-            LOG.Info('The referenced VNFFG ID :%s is deleted', vnffgs.get('id'))
+        vnffg_list = self._get_vnffgs_from_vnf(context, old_vnf_id)
+        vnffg_id = vnffg_list.pop('id')
+        self.delete_vnffg(context, vnffg_id)
+        LOG.Info('The referenced VNFFG ID :%s is deleted', vnffg_id)
 
+    def _get_vnffgs_from_vnf(self, context, vnf_id):
+        vnffgs =  super(NfvoPlugin, self).get_vnffgs(context)
+        vnffg_list = list()
+
+        for vnffg_info in vnffgs:
+            vnffg = self.get_vnffg(context, vnffg_info['id'])
+            template_id = vnffg['vnffgd_id']
+
+            with context.session.begin(subtransactions=True):
+                template_db = self._get_resource(context, VnffgTemplate, template_id)
+                LOG.debug('vnffg template %s', template_db)
+
+                if vnffg.get('attributes') and  vnffg['attributes'].get('param_values'):
+                    vnffg_param = vnffg['attributes']
+                    vnffgd_topology_template = template_db.template['vnffgd']['topology_template']
+                    self._process_parameterized_template(vnffg_param, vnffgd_topology_template)
+                    template_db.template['vnffgd']['topology_template'] =  vnffgd_topology_template
+                vnf_members = self._get_vnffg_property(template_db.template, 'constituent_vnfs')
+            LOG.debug('Constituent VNFs: %s', vnf_members)
+            vnf_mapping = self._get_vnf_mapping(context, vnffg.get('vnf_mapping'), vnf_members)
+            for vnfd, vnf_id_ in vnf_mapping.items():
+                if vnf_id == vnf_id_:
+                    vnffg_list.append(vnffg_info['id'])
+        return vnffg_list
