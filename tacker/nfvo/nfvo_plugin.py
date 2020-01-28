@@ -992,9 +992,10 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
 
         vnffg_dict = self.get_vnffg(context, vnffg_id)
         vnf_mapping_old = vnffg_dict['vnffg']['vnf_mapping']
-        vnf_mapping_update = vnf_mapping_old:
-        for vnfd in vnf_mapping_old.keys():
-            if vnf_mapping_old[vnfd]['vnf'] == new_vnf_id:
+        vnf_mapping_update = vnf_mapping_old
+
+        for vnfd, vnf in vnf_mapping_old.items():
+            if vnf == old_vnf_id:
                 vnf_mapping_update[vnfd] = new_vnf_id
         vnffg_dict['vnffg']['vnf_mapping'] = vnf_mapping_update
         self.update_vnffg(self.context, vnffg_id, vnffg_dict)
