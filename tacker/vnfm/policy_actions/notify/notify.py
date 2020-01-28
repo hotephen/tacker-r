@@ -93,6 +93,6 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
         # To defined Check VNFFG
         #vnffg_info = nfvo_plugin.get_vnffg_referensed_vnf()
-        vnf_old_id = vnf_dict['id']
+
         vnf_new_id = updated_vnf['id']
-        nfvo_plugin.mark_event(vnf_old_id,vnf_new_id)
+        nfvo_plugin.mark_event(context, vnf_old_id,vnf_new_id)
