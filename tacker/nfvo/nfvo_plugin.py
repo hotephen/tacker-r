@@ -78,7 +78,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
             'monitor_interval', default=30,
             help=_('Interval to check for VIM health')),
     ]
-    cfg.CONF.register_opts(OPTS , 'nfvo_vim')
+    cfg.CONF.register_opts(OPTS, 'nfvo_vim')
 
 
     def __init__(self):
@@ -986,8 +986,20 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
 
         vnffg_list = self._get_vnffgs_from_vnf(context, old_vnf_id)
         vnffg_id = vnffg_list.pop('id')
-        self.delete_vnffg(context, vnffg_id)
-        LOG.Info('The referenced VNFFG ID :%s is deleted', vnffg_id)
+
+        #self.delete_vnffg(context, vnffg_id)
+        #LOG.Info('The referenced VNFFG ID :%s is deleted', vnffg_id)
+
+        vnffg_dict = self.get_vnffg(context, vnffg_id)
+        vnf_mapping_old = vnffg_dict['vnffg']['vnf_mapping']
+        vnf_mapping_update = vnf_mapping_old:
+        for vnfd in vnf_mapping_old.keys():
+            if vnf_mapping_old[vnfd]['vnf'] == new_vnf_id:
+                vnf_mapping_update[vnfd] = new_vnf_id
+        vnffg_dict['vnffg']['vnf_mapping'] = vnf_mapping_update
+        self.update_vnffg(self.context, vnffg_id, vnffg_dict)
+
+
 
     def _get_vnffgs_from_vnf(self, context, vnf_id):
         vnffgs =  super(NfvoPlugin, self).get_vnffgs(context)
@@ -1013,3 +1025,4 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
                 if vnf_id == vnf_id_:
                     vnffg_list.append(vnffg_info['id'])
         return vnffg_list
+
