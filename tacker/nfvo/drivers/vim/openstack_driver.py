@@ -519,17 +519,20 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
 
         pc_info = neutronclient_.port_chain_show(chain_id)
             # Get port_chain_info from chain_id
-        LOG.info("pc_info : %(pc_info)", {'pc_info'=pc_info}) # LOG
+       
+        LOG.info("pc_info") # LOG
 
         old_ppgs = pc_info['port_chain']['port_pair_groups']
             # old_ppgs = ["ppg_id1", "ppg_id2"]
-        LOG.info("old_ppgs : %(old_ppgs)", {'old_ppgs'=old_ppgs}) # LOG
+        
+        LOG.info("old_ppgs") # LOG
 
         old_ppgs_dict = {neutronclient_.port_pair_group_show(ppg_id)
             ['port_pair_group']['name'].split('-')[0]: \
             ppg_id for ppg_id in old_ppgs}
             # old_ppgs_dict = {VNF1 : ppg_id1, VNF2 : ppg_id2}
-        LOG.info("old_ppgs_dict : %(old_ppgs_dict)", {'old_ppgs_dict'=old_ppgs_dict}) # LOG
+       
+        LOG.info("old_ppgs_dict") # LOG
 
 
         try:
