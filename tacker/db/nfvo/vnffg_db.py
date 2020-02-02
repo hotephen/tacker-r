@@ -862,8 +862,7 @@ class VnffgPluginDbMixin(vnffg.VNFFGPluginBase, db_base.CommonDbMixin):
         nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
         LOG.info('NFVO_plugin is called successfully')
         chain_id = "45df1c99-530b-4d9a-930d-e6003cebdd91"
-        vnf = {'name':'vnf2', 'CONNECTION_POINT': \ 
-            'cbc7afd5-d95e-4115-b6e1-b868a6d8b26e'}
+        vnf = {'name':'vnf2', 'CONNECTION_POINT': 'cbc7afd5-d95e-4115-b6e1-b868a6d8b26e'}
         nfvo_plugin.scale_chain(chain_id,vnf)
         #TODO:
         return self._fields(res, fields)
