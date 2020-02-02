@@ -504,7 +504,7 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
         # input
         # chain_id = asdf1234
         # vnf = {“name” : VNF1_name, “CONNECTION_POINT” : CP,}
-        LOG.info("scale_chain method is called successfully")
+        LOG.info("scale_chain method is called")
 
         if not auth_attr:
             LOG.warning("auth information required for n-sfc driver")
@@ -519,14 +519,18 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
 
         pc_info = neutronclient_.port_chain_show(chain_id)
             # Get port_chain_info from chain_id
+        LOG.info("pc_info : %(pc_info)", {'pc_info'=pc_info}) # LOG
 
         old_ppgs = pc_info['port_chain']['port_pair_groups']
             # old_ppgs = ["ppg_id1", "ppg_id2"]
-        
+        LOG.info("old_ppgs : %(old_ppgs)", {'old_ppgs'=old_ppgs}) # LOG
+
         old_ppgs_dict = {neutronclient_.port_pair_group_show(ppg_id)
             ['port_pair_group']['name'].split('-')[0]: \
             ppg_id for ppg_id in old_ppgs}
             # old_ppgs_dict = {VNF1 : ppg_id1, VNF2 : ppg_id2}
+        LOG.info("old_ppgs_dict : %(old_ppgs_dict)", {'old_ppgs_dict'=old_ppgs_dict}) # LOG
+
 
         try:
             if vnf['name'] in old_ppgs_dict:
@@ -549,6 +553,8 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
                 else:
                     ingress = cp_list[0]
                     egress = cp_list[1]
+                
+                LOG.info("cp") # LOG
 
                 port_pair = {}
                 port_pair['name'] = vnf['name'] + '-connection-points-scaled-out'
@@ -556,7 +562,9 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
                 port_pair['ingress'] = ingress
                 port_pair['egress'] = egress
                 port_pair_id = neutronclient_.port_pair_create(port_pair)
-                                               
+
+                LOG.info("port_pair_create success") # LOG 
+
                 updating_ppg_dict['port_pairs'].append(port_pair_id)
                 updated_ppg = neutronclient_.port_pair_group_update(ppg_id=updating_ppg_id, ppg_dict=updating_ppg_dict)
                     # call port_pair_group_update method

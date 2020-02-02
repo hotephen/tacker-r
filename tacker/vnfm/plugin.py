@@ -621,7 +621,9 @@ class VNFMPlugin(vnfm_db.VNFMPluginDb, VNFMMgmtMixin):
             #TODO:    
             nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
             LOG.info('NFVO_plugin is called successfully')
-            #nfvo_plugin.scale_chain()
+            chain_id = "45df1c99-530b-4d9a-930d-e6003cebdd91"
+            vnf = {'name':'vnf2', 'CONNECTION_POINT':''}
+            nfvo_plugin.scale_chain(chain_id,vnf)
                 #def scale_chain(self, chain_id, vnf, symmetrical=None, auth_attr=None):
             #TODO:
 
