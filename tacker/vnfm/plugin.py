@@ -746,6 +746,11 @@ class VNFMPlugin(vnfm_db.VNFMPluginDb, VNFMMgmtMixin):
                                                vnf_id=vnf_id)
         policy_.update({'action': scale['scale']['type']})
         self._handle_vnf_scaling(context, policy_)
+#TODO:
+        nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
+        LOG.info('NFVO_plugin is called successfully')
+        nfvo_plugin.scale_chain()
+            #def scale_chain(self, chain_id, vnf, symmetrical=None, auth_attr=None):
 
         return scale['scale']
 

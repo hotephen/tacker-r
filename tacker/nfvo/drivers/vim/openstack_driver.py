@@ -497,6 +497,78 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
             port_chain['chain_parameters'] = {}
             port_chain['chain_parameters']['symmetric'] = True
         return neutronclient_.port_chain_create(port_chain)
+    
+    
+    
+    def scale_chain(self, chain_id, vnf, symmetrical=None, auth_attr=None):
+        # input
+        # chain_id = asdf1234
+        # vnf = {“name” : VNF1_name, “CONNECTION_POINT” : CP,}
+        LOG.info("scale_chain method is called successfully")
+
+        if not auth_attr:
+            LOG.warning("auth information required for n-sfc driver")
+            return None
+
+        neutronclient_ = NeutronClient(auth_attr)
+        port_pairs_list = neutronclient_.port_pair_list()
+        port_pair_groups_list = neutronclient_.port_pair_group_list()
+        port_chains_list = neutronclient_.port_chain_list()
+        new_ppgs = []
+        updated_port_chain = dict()
+
+        pc_info = neutronclient_.port_chain_show(chain_id)
+            # Get port_chain_info from chain_id
+
+        old_ppgs = pc_info['port_chain']['port_pair_groups']
+            # old_ppgs = ["ppg_id1", "ppg_id2"]
+        
+        old_ppgs_dict = {neutronclient_.port_pair_group_show(ppg_id)
+            ['port_pair_group']['name'].split('-')[0]: \
+            ppg_id for ppg_id in old_ppgs}
+            # old_ppgs_dict = {VNF1 : ppg_id1, VNF2 : ppg_id2}
+
+        try:
+            if vnf['name'] in old_ppgs_dict:
+                updating_ppg_id = old_ppgs_dict[vnf['name']]
+                    # updating_ppg_id = "ppg_id"        
+                updating_ppg_dict = neutronclient_.port_pair_group_show(updating_ppg_id)
+                        
+#TODO:          CONNECTION_POINT =  manual typing 
+                cp_list = vnf[CONNECTION_POINT]
+                num_cps = len(cp_list)
+                if num_cps not in [1, 2]:
+                    LOG.warning("Chain update failed due to wrong number "
+                                "of connection points: expected [1 | 2],"
+                                "got %(cps)d", {'cps': num_cps})
+                    raise nfvo.UpdateChainException(
+                        message="Invalid number of connection points")
+                if num_cps == 1:
+                    ingress = cp_list[0]
+                    egress = cp_list[0]
+                else:
+                    ingress = cp_list[0]
+                    egress = cp_list[1]
+
+                port_pair = {}
+                port_pair['name'] = vnf['name'] + '-connection-points-scaled-out'
+                port_pair['description'] = 'scaled-out port pair for' + vnf['name']
+                port_pair['ingress'] = ingress
+                port_pair['egress'] = egress
+                port_pair_id = neutronclient_.port_pair_create(port_pair)
+                                               
+                updating_ppg_dict['port_pairs'].append(port_pair_id)
+                updated_ppg = neutronclient_.port_pair_group_update(ppg_id=updating_ppg_id, ppg_dict=updating_ppg_dict)
+                    # call port_pair_group_update method
+                return updated_ppg
+            else:
+                raise nfvo.UpdateChainException(
+                    message="The VNF is not included in the chain")
+
+        except nfvo.UpdateChainException as e:
+            raise e
+    
+
 
     def update_chain(self, chain_id, fc_ids, vnfs,
                      symmetrical=None, auth_attr=None):
@@ -996,3 +1068,14 @@ class NeutronClient(object):
         except nc_exceptions.NotFound:
             LOG.warning('port pair group %s not found', ppg_id)
             raise ValueError('port pair group %s not found' % ppg_id)
+
+    def port_pair_group_update(self, ppg_id, ppg_dict):
+        try:
+            port_pair_group = self.client.update_sfc_port_pair_group(ppg_id, {'port_pair_group' : ppg_dict})
+            if port_pair_group is None:
+                raise ValueError('port pair group %s not found' % ppg_id)
+            return port_pair_group
+
+        except nc_exceptions.NotFound:
+            LOG.warning('port pair group %s not found', ppg_id)
+            raise ValueError('port pair group %s not found' % ppg_id)        
