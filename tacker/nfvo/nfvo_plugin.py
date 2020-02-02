@@ -366,7 +366,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         return vnffg_dict
 
     #TODO:
-    def scaling_chain(self, vnf)
+    def scaling_chain(self, vnf):
         LOG.info("scaling_chain")
         updated_ppg = self._vim_drivers.invoke(driver_type,
                                               'scale_chain',
