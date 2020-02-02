@@ -366,10 +366,18 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         return vnffg_dict
 
     ###TODO:
-    def scaling_chain(self, context, vnf):
+    def scaling_chain(self, vnf):
         LOG.info("scaling_chain")
-        vim_obj = self._get_vim_from_vnf(context,vnf['vnf_id'])
-        driver_type = vim_obj['type']
+        vim_obj = {'id': 'd6ae62ed-a338-46a6-af63-d5d4694797c0', 'type':
+                'openstack', 'auth_url': 'http://127.0.0.1/identity/v3',
+                'auth_cred': {'username': 'admin',
+                              'password': 'devstack',
+                              'user_domain_name': 'Default',
+                              'cert_verify': 'False',
+                              'auth_url': 'http://127.0.0.1/identity/v3'},
+                'name': 'vim',
+                'vim_project': {'name': 'admin',
+                                'project_domain_name': 'Default'}}
         updated_ppg = self._vim_drivers.invoke(driver_type,
                                               'scale_chain',
                                               chain_id= '45df1c99-530b-4d9a-930d-e6003cebdd91' ,
