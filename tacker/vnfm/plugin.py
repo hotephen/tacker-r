@@ -38,6 +38,7 @@ from tacker.vnfm.mgmt_drivers import constants as mgmt_constants
 from tacker.vnfm import monitor
 from tacker.vnfm import vim_client
 
+from tacker import manager
 
 LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
