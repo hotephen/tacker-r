@@ -501,9 +501,8 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
     
     
     def scale_chain(self, chain_id, vnf, symmetrical=None, auth_attr=None):
-        # input
-        # chain_id = asdf1234
 
+###TODO:
         LOG.info("scale_chain method is called")
 
         if not auth_attr:
