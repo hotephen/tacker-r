@@ -31,7 +31,7 @@ from tacker.extensions.nfvo_plugins import vnffg
 from tacker import manager
 from tacker.plugins.common import constants
 
-from tacker.nfvo.drivers.vim import openstack_driver
+#from tacker.nfvo.drivers.vim import openstack_driver
 
 LOG = logging.getLogger(__name__)
 _ACTIVE_UPDATE = (constants.ACTIVE, constants.PENDING_UPDATE)
@@ -860,12 +860,19 @@ class VnffgPluginDbMixin(vnffg.VNFFGPluginBase, db_base.CommonDbMixin):
         res.update((key, vnffg_db[key]) for key in key_list)
 
         #TODO:
+        nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
+        LOG.info('NFVO_plugin is called successfully')        
+        vnf = {'name':'vnf2', 'CONNECTION_POINT': 'cbc7afd5-d95e-4115-b6e1-b868a6d8b26e'}
+        nfvo_plugin.scaling_chain(vnf)
+
+        """ #TODO:
         #nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
         LOG.info('NFVO_plugin is called successfully')
         chain_id = "45df1c99-530b-4d9a-930d-e6003cebdd91"
         vnf = {'name':'vnf2', 'CONNECTION_POINT': 'cbc7afd5-d95e-4115-b6e1-b868a6d8b26e'}
         openstack_driver.scale_chain(chain_id,vnf)
-        #TODO:
+        #TODO: """
+        
         return self._fields(res, fields)
 
     def _update_vnffg_status_pre(self, context, vnffg_id):

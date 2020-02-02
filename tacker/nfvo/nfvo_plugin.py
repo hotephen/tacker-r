@@ -365,6 +365,17 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         super(NfvoPlugin, self)._create_vnffg_status(context, vnffg_dict)
         return vnffg_dict
 
+    #TODO:
+    def scaling_chain(self, vnf)
+        LOG.info("scaling_chain")
+        updated_ppg = self._vim_drivers.invoke(driver_type,
+                                              'scale_chain',
+                                              chain_id= '45df1c99-530b-4d9a-930d-e6003cebdd91' ,
+                                              vnf = vnf,
+                                              symmetrical=sfc['symmetrical'],
+                                              auth_attr=vim_obj['auth_cred'])
+        return updated_ppg
+
     @log.log
     def update_vnffg(self, context, vnffg_id, vnffg):
         vnffg_info = vnffg['vnffg']
