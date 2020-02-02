@@ -616,6 +616,14 @@ class VNFMPlugin(vnfm_db.VNFMPluginDb, VNFMMgmtMixin):
             LOG.debug("Policy %(policy)s vnf is at %(status)s",
                       {'policy': policy['name'],
                        'status': new_status})
+
+            #TODO:    
+            nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
+            LOG.info('NFVO_plugin is called successfully')
+            #nfvo_plugin.scale_chain()
+                #def scale_chain(self, chain_id, vnf, symmetrical=None, auth_attr=None):
+            #TODO:
+
             return result
 
         # action
@@ -746,12 +754,6 @@ class VNFMPlugin(vnfm_db.VNFMPluginDb, VNFMMgmtMixin):
                                                vnf_id=vnf_id)
         policy_.update({'action': scale['scale']['type']})
         self._handle_vnf_scaling(context, policy_)
-#TODO:
-        nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
-        LOG.info('NFVO_plugin is called successfully')
-        nfvo_plugin.scale_chain()
-            #def scale_chain(self, chain_id, vnf, symmetrical=None, auth_attr=None):
-
         return scale['scale']
 
     def get_vnf_policy_by_type(self, context, vnf_id, policy_type=None, fields=None):             # noqa
