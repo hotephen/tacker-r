@@ -376,6 +376,8 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
                                               vnf = vnf,
                                               symmetrical=sfc['symmetrical'],
                                               auth_attr=vim_obj['auth_cred'])
+        LOG.info("scaling_chain 2")
+                                            
         return updated_ppg
 
     @log.log
