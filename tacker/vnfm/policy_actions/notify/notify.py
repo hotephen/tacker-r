@@ -39,7 +39,6 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         vnf_old_id = vnf_dict['id']
         LOG.info('vnf %s is dead and needs to be respawned', vnf_old_id)
 
-        LOG.info('vnf id %s is dead and the event should be notified to NFVO', vnf_id)
         nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
         #To defined Check VNFFG
 

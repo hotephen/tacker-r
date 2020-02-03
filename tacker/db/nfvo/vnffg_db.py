@@ -220,6 +220,7 @@ class VnffgPluginDbMixin(vnffg.VNFFGPluginBase, db_base.CommonDbMixin):
 
     def update_vnffg(self, context, vnffg_id, vnffg):
         vnffg_dict = self._update_vnffg_pre(context, vnffg_id)
+        LOG.info('update vnffg') #To be deleted
         self._update_vnffg_post(context, vnffg_id, constants.ACTIVE, vnffg)
         return vnffg_dict
 
@@ -303,6 +304,34 @@ class VnffgPluginDbMixin(vnffg.VNFFGPluginBase, db_base.CommonDbMixin):
         return self._get_collection(context, VnffgChain,
                                     self._make_chain_dict,
                                     filters=filters, fields=fields)
+
+    def get_vnffgs_from_vnf(self, context, vnf_id):
+        vnffgs =  self.get_vnffgs(context)
+        vnffg_list = list()
+        for vnffg_info in vnffgs:
+#            template_id = vnffg_info['vnffgd_id']
+#            LOG.info('VNFFGD ID: %s', template_id) #will be deleted
+
+ #           with context.session.begin(subtransactions=True):
+ #               template_db = self._get_resource(context, VnffgTemplate, template_id)
+ #               LOG.info('vnffg template %s', template_db) #log.debug will be changed\
+ #
+ #               if vnffg.get('attributes') and  vnffg['attributes'].get('param_values'):
+ #                   vnffg_param = vnffg['attributes']
+ #                   vnffgd_topology_template = template_db.template['vnffgd']['topology_template']
+ #                   self._process_parameterized_template(vnffg_param, vnffgd_topology_template)
+ #                   template_db.template['vnffgd']['topology_template'] =  vnffgd_topology_template
+
+ #               vnf_members = self._get_vnffg_property(template_db.template, 'constituent_vnfs')
+#            LOG.info('Constituent VNFs: %s', vnf_members)
+#            vnf_mapping = self._get_vnf_mapping(context, vnffg.get('vnf_mapping'), vnf_members)
+            vnf_mapping = vnffg_info['vnf_mapping']
+            for vnfd, vnf_id_ in vnf_mapping.items():
+                LOG.info('vnf_id %s vs vnf_id %s', vnf_id_, vnf_id)
+                if vnf_id_ == vnf_id:
+                    vnffg_list.append(vnffg_info)
+        return vnffg_list
+
 
     def _update_template_params(self, original, paramvalues, param_matched):
         if 'get_input' not in str(original):
