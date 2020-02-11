@@ -180,6 +180,7 @@ class TackerManager(object):
 
     @classmethod
     def get_service_plugins(cls):
+        LOG.debug("def get_service_plugins")
         return cls.get_instance().service_plugins
 
     @classmethod
