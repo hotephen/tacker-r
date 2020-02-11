@@ -365,7 +365,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         super(NfvoPlugin, self)._create_vnffg_status(context, vnffg_dict)
         return vnffg_dict
 
-    ###TODO:
+    ###TODO: 2. scaling_chain -> openstack_driver.scale_chain
     def scaling_chain(self, context, vnf):
         LOG.info("scaling_chain")
         
