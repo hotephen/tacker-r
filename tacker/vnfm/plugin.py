@@ -194,12 +194,15 @@ class VNFMPlugin(vnfm_db.VNFMPluginDb, VNFMMgmtMixin):
 
         self._parse_template_input(vnfd)
 
-        ###TODO:
+        # ##TODO:
         nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
         LOG.info('NFVO_plugin is called successfully')        
-        vnf = {'name':'vnf2', 'CONNECTION_POINT': 'cbc7afd5-d95e-4115-b6e1-b868a6d8b26e','vnf_id':'42f8202b-4405-4e05-9386-3c503830939e8'}
+        vnf = {'name':'vnf2', 'CONNECTION_POINT': 'cbc7afd5-d95e-4115-b6e1-b868a6d8b26e',
+        'vnf_id':'a574dee7-fed3-4466-ade3-378ebaf43332'}
+        #'vnf_id':'42f8202b-4405-4e05-9386-3c503830939e8'}
         nfvo_plugin.scaling_chain(context,vnf)
 
+        #TODO: ##
 
 
 
@@ -629,14 +632,14 @@ class VNFMPlugin(vnfm_db.VNFMPluginDb, VNFMMgmtMixin):
                       {'policy': policy['name'],
                        'status': new_status})
 
-            #TODO:    
+            ''' #TODO:    
             nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
             LOG.info('NFVO_plugin is called successfully')
             chain_id = "45df1c99-530b-4d9a-930d-e6003cebdd91"
             vnf = {'name':'vnf2', 'CONNECTION_POINT':''}
             nfvo_plugin.scale_chain(chain_id,vnf)
                 #def scale_chain(self, chain_id, vnf, symmetrical=None, auth_attr=None):
-            #TODO:
+            #TODO: '''
 
             return result
 

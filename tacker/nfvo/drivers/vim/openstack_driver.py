@@ -499,10 +499,8 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
         return neutronclient_.port_chain_create(port_chain)
     
     
-    
-    def scale_chain(self, chain_id, vnf, symmetrical=None, auth_attr=None):
-
 ###TODO:
+    def scale_chain(self, chain_id, vnf, symmetrical=None, auth_attr=None):
         LOG.info("scale_chain method is called")
 
         if not auth_attr:
@@ -577,7 +575,7 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
 
         except nfvo.UpdateChainException as e:
             raise e
-    
+#TODO: 
 
 
     def update_chain(self, chain_id, fc_ids, vnfs,
