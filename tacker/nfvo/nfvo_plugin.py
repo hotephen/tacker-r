@@ -367,7 +367,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
 
     ###TODO: 2. scaling_chain -> openstack_driver.scale_chain
     def scaling_chain(self, context, vnf):
-        LOG.info("scaling_chain")
+        LOG.info("log nfvo_plugin.scaling_chain is called")
         
         vim_obj = self._get_vim_from_vnf(context, vnf['id'])
         driver_type = vim_obj['type']
@@ -537,8 +537,10 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         vim_auth = vim_info['auth_cred']
         vim_auth['password'] = self._decode_vim_auth(vim_info['id'],
                                                      vim_auth)
+        LOG.info('log: vim_auth[password] is %s', vim_auth['password']) #TODO:                      
         vim_auth['auth_url'] = vim_info['auth_url']
-
+        LOG.info('log: vim_auth[auth_url] is %s', vim_auth['auth_url']) #TODO:
+        
         # These attributes are needless for authentication
         # from keystone, so we remove them.
         needless_attrs = ['key_type', 'secret_uuid']
@@ -549,13 +551,15 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
 
     def _decode_vim_auth(self, vim_id, auth):
         """Decode Vim credentials
-
         Decrypt VIM cred, get fernet Key from local_file_system or
         barbican.
         """
+        LOG.info('log: _decode_vim_auth is called') #TODO:
+
         cred = auth['password'].encode('utf-8')
         if auth.get('key_type') == 'barbican_key':
             k_context = t_context.generate_tacker_service_context()
+            LOG.info('log: t_context.generate_tacker_service_context is called') #TODO:
             keystone_conf = CONF.keystone_authtoken
             secret_uuid = auth['secret_uuid']
             keymgr_api = KEYMGR_API(keystone_conf.auth_url)
