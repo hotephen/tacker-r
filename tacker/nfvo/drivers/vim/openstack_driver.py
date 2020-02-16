@@ -501,8 +501,8 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
     
 ###TODO:
     def scale_chain(self, chain_id, vnf, symmetrical=None, auth_attr=None):
-        LOG.info("scale_chain method is called")
-
+        LOG.info("log: openstack_driver.scale_chain method is called")
+""" 
         if not auth_attr:
             LOG.warning("auth information required for n-sfc driver")
             return None
@@ -575,7 +575,7 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
 
         except nfvo.UpdateChainException as e:
             raise e
-#TODO: 
+#TODO:  """
 
 
     def update_chain(self, chain_id, fc_ids, vnfs,
