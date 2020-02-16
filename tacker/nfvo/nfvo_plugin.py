@@ -537,9 +537,9 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         vim_auth = vim_info['auth_cred']
         vim_auth['password'] = self._decode_vim_auth(vim_info['id'],
                                                      vim_auth)
-        LOG.info('log: vim_auth[password] is %s', vim_auth['password']) #TODO:                      
+        LOG.info('log: vim_auth[password] is %s', vim_auth['password']) ###
         vim_auth['auth_url'] = vim_info['auth_url']
-        LOG.info('log: vim_auth[auth_url] is %s', vim_auth['auth_url']) #TODO:
+        LOG.info('log: vim_auth[auth_url] is %s', vim_auth['auth_url']) ###
         
         # These attributes are needless for authentication
         # from keystone, so we remove them.
@@ -554,12 +554,12 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         Decrypt VIM cred, get fernet Key from local_file_system or
         barbican.
         """
-        LOG.info('log: _decode_vim_auth is called') #TODO:
+        LOG.info('log: _decode_vim_auth is called') ###
 
         cred = auth['password'].encode('utf-8')
         if auth.get('key_type') == 'barbican_key':
             k_context = t_context.generate_tacker_service_context()
-            LOG.info('log: t_context.generate_tacker_service_context is called') #TODO:
+            LOG.info('log: t_context.generate_tacker_service_context is called') ###
             keystone_conf = CONF.keystone_authtoken
             secret_uuid = auth['secret_uuid']
             keymgr_api = KEYMGR_API(keystone_conf.auth_url)
