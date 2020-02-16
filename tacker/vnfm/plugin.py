@@ -197,8 +197,11 @@ class VNFMPlugin(vnfm_db.VNFMPluginDb, VNFMMgmtMixin):
         # ##TODO: 1. vnfd-create event -> 2. nfvo_plugin.scaling_chain
         nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
         LOG.info('NFVO_plugin is called successfully')        
-        vnf = {'name':'vnf2', 'CONNECTION_POINT': 'cbc7afd5-d95e-4115-b6e1-b868a6d8b26e',
-        'vnf_id':'42f8202b-4405-4e05-9386-3c503830939e8'}
+        vnf_id = '42f8202b-4405-4e05-9386-3c503830939e8'
+        vnf = self.get_vnf(context, vnf_id)
+#        vnf = {'name':'vnf2', 'CONNECTION_POINT': 'cbc7afd5-d95e-4115-b6e1-b868a6d8b26e',
+#        'vnf_id':'42f8202b-4405-4e05-9386-3c503830939e8'}
+        
         nfvo_plugin.scaling_chain(context,vnf)
 
         #TODO: ##
