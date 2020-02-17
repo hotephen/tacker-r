@@ -71,8 +71,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
 
     OPTS = [
         cfg.ListOpt(
-            'vim_drivers', default=['openstack'],
-            #'vim_drivers', default=['openstack', 'kubernetes'],
+            'vim_drivers', default=['openstack', 'kubernetes'],
             help=_('VIM driver for launching VNFs')),
         cfg.IntOpt(
             'monitor_interval', default=30,
@@ -86,6 +85,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         self._vim_drivers = driver_manager.DriverManager(
             'tacker.nfvo.vim.drivers',
             cfg.CONF.nfvo_vim.vim_drivers)
+        LOG.info('log: cfg.CONF.nfvo_vim.vim_drivers is %s', cfg.CONF.nfvo_vim.vim_drivers)        
         self.vim_client = vim_client.VimClient()
 
     def get_auth_dict(self, context):
