@@ -66,6 +66,9 @@ class DriverManager(object):
         self._drivers[type_] = driver
 
     def invoke(self, type_, method_name, **kwargs):
+        LOG.info('log: driver_manager.invoke')                
+        LOG.info('log: %s', self._drivers)                
+        LOG.info('log: %s', self._drivers[type_])                
         driver = self._drivers[type_]
         return getattr(driver, method_name)(**kwargs)
 
