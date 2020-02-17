@@ -371,6 +371,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         
         vim_obj = self._get_vim_from_vnf(context, vnf['id'])
         driver_type = vim_obj['type']
+        LOG.info("log: vim_obj[type] is %s ", vim_obj['type']) 
         updated_ppg = self._vim_drivers.invoke(driver_type,
                                               'scale_chain',
                                               chain_id= '45df1c99-530b-4d9a-930d-e6003cebdd91',
