@@ -71,7 +71,8 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
 
     OPTS = [
         cfg.ListOpt(
-            'vim_drivers', default=['openstack', 'kubernetes'],
+            'vim_drivers', default=['openstack'],
+            #'vim_drivers', default=['openstack', 'kubernetes'],
             help=_('VIM driver for launching VNFs')),
         cfg.IntOpt(
             'monitor_interval', default=30,
