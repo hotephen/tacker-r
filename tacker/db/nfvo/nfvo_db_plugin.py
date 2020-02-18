@@ -65,6 +65,7 @@ class NfvoPluginDb(nfvo.NFVOPluginBase, db_base.CommonDbMixin):
 
     def _get_resource(self, context, model, id):
         try:
+            LOG.info('log: _get_resource is called') ###
             return self._get_by_id(context, model, id)
         except orm_exc.NoResultFound:
             if issubclass(model, nfvo_db.Vim):
@@ -135,7 +136,9 @@ class NfvoPluginDb(nfvo.NFVOPluginBase, db_base.CommonDbMixin):
         return vnfs_db
 
     def get_vim(self, context, vim_id, fields=None, mask_password=True):
+        LOG.info('log: get_vim is called') ###
         vim_db = self._get_resource(context, nfvo_db.Vim, vim_id)
+        LOG.info('log: vim_db is %s', vim_db) ###
         return self._make_vim_dict(vim_db, mask_password=mask_password)
 
     def get_vims(self, context, filters=None, fields=None):

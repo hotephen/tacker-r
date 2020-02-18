@@ -365,12 +365,13 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
                                                    vnffg_dict)
         super(NfvoPlugin, self)._create_vnffg_status(context, vnffg_dict)
         return vnffg_dict
-
+    
     ###TODO: 2. scaling_chain -> openstack_driver.scale_chain
     def scaling_chain(self, context, vnf):
         LOG.info("log nfvo_plugin.scaling_chain is called")
-        
-        vim_obj = self._get_vim_from_vnf(context, vnf['id'])
+        vim_id = 'd6ae62ed-a338-46a6-af63-d5d4694797c0'
+        vim_obj = self._get_vim(context, vim_id)
+        #vim_obj = self._get_vim_from_vnf(context, vnf['id'])
         driver_type = vim_obj['type']
         LOG.info("log: vim_obj[type] is %s ", vim_obj['type']) 
         updated_ppg = self._vim_drivers.invoke(driver_type,
@@ -381,6 +382,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         LOG.info("scaling_chain 2")
                                             
         return updated_ppg
+    ###TODO:
 
     @log.log
     def update_vnffg(self, context, vnffg_id, vnffg):
