@@ -449,7 +449,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
                 classifier_ids.append(classifier_dict.pop('id'))
                 classifier_update.append(classifier_dict)
 
-        # TODO(gongysh) support different vim for each vnf
+        # TODO(gongysh) support different vim for each vnf 
         vim_obj = self._get_vim_from_vnf(context,
                                          list(vnffg_dict[
                                               'vnf_mapping'].values())[0])

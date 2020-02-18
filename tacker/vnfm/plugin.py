@@ -199,6 +199,7 @@ class VNFMPlugin(vnfm_db.VNFMPluginDb, VNFMMgmtMixin):
         LOG.info('log: NFVO_plugin is called successfully')        
         vnf_id = '42f8202b-4405-4e05-9386-3c50383039e8'
         LOG.info('log: context is %s', context)        
+        LOG.info('log: context is %s', dir(context))
         vnf = self.get_vnf(context, vnf_id)
         LOG.info('log: get_vnf is called')        
 #        vnf = {'name':'vnf2', 'CONNECTION_POINT': 'cbc7afd5-d95e-4115-b6e1-b868a6d8b26e',
