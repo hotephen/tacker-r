@@ -65,7 +65,6 @@ class NfvoPluginDb(nfvo.NFVOPluginBase, db_base.CommonDbMixin):
 
     def _get_resource(self, context, model, id):
         try:
-            LOG.info('log: _get_resource is called') ###
             return self._get_by_id(context, model, id)
         except orm_exc.NoResultFound:
             if issubclass(model, nfvo_db.Vim):
