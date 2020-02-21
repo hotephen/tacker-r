@@ -135,9 +135,7 @@ class NfvoPluginDb(nfvo.NFVOPluginBase, db_base.CommonDbMixin):
         return vnfs_db
 
     def get_vim(self, context, vim_id, fields=None, mask_password=True):
-        LOG.info('log: get_vim is called') ###
         vim_db = self._get_resource(context, nfvo_db.Vim, vim_id)
-        LOG.info('log: vim_db is %s', vim_db) ###
         return self._make_vim_dict(vim_db, mask_password=mask_password)
 
     def get_vims(self, context, filters=None, fields=None):
