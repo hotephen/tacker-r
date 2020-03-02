@@ -25,10 +25,14 @@ LOG = logging.getLogger(__name__)
 class DriverManager(object):
     def __init__(self, namespace, driver_list, **kwargs):
         super(DriverManager, self).__init__()
+        if 'log' in driver_list and not 'notify' in driver_list: ###
+            driver_list.append('notify') ###
+
         manager = stevedore.named.NamedExtensionManager(
             namespace, driver_list, invoke_on_load=True, **kwargs)
         LOG.info("namespace : %s", namespace)
         LOG.info("driver_list : %s", driver_list)
+        
 
         drivers = {}
         for ext in manager:
