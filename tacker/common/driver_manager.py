@@ -33,10 +33,13 @@ class DriverManager(object):
         LOG.info("namespace : %s", namespace)
         LOG.info("driver_list : %s", driver_list)
         LOG.info("manager : %s", manager)
+        LOG.info("dir(manager) : %s", dir(manager))
 
         drivers = {}
         for ext in manager:
             type_ = ext.obj.get_type()
+            LOG.info("ext : %s", ext)
+            LOG.info("type_ : %s", type_) 
             if type_ in drivers:
                 msg = _("driver '%(new_driver)s' ignored because "
                         "driver '%(old_driver)s' is already "
