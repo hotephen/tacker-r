@@ -32,7 +32,7 @@ class DriverManager(object):
             namespace, driver_list, invoke_on_load=True, **kwargs)
         LOG.info("namespace : %s", namespace)
         LOG.info("driver_list : %s", driver_list)
-        
+        LOG.info("manager : %s", manager)
 
         drivers = {}
         for ext in manager:
