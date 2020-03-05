@@ -976,7 +976,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
                 context, ns_id, None, None)
         return ns['id']
 
-@log.log
+    @log.log
     def mark_event(self, context, old_vnf_id, new_vnf_id):
         # To find vnffg_number
         LOG.info('NFVO resecives the failure event of VNF %s', old_vnf_id)
