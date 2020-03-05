@@ -29,6 +29,12 @@ class DriverManager(object):
         super(DriverManager, self).__init__()
         manager = stevedore.named.NamedExtensionManager(
             namespace, driver_list, invoke_on_load=True, **kwargs)
+        
+        LOG.info("namespace : %s", namespace)
+        LOG.info("driver_list : %s", driver_list)
+        LOG.info("manager : %s", manager)
+        LOG.info("dir(manager) : %s", dir(manager))
+
 
         drivers = {}
         for ext in manager:
