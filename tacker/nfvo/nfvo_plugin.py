@@ -996,7 +996,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         vnffg_list = super(NfvoPlugin, self).get_vnffgs_from_vnf(context, old_vnf_id)
         LOG.info('VNFFG list updated %s', vnffg_list)
         for vnffg in vnffg_list:
-            vnffg_id = vnffg('id')
+            vnffg_id = vnffg['id']
             LOG.info('VNFFG %s should be healed', vnffg_id)
             vnf_mapping_old = vnffg['vnf_mapping']
             vnf_mapping_update = vnf_mapping_old
