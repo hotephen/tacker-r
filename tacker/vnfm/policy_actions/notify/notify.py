@@ -37,15 +37,15 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
     # Then, NFVO finds VNFFG which include the VNF and decides wether VNFFG should be deleted or changed.
     def execute_action(self, plugin, context, vnf_dict, args):
         vnf_old_id = vnf_dict['id']
-        LOG.info('log : vnf %s is dead and needs to be respawned', vnf_old_id)
-        LOG.info('log : dir(vnf_dict) is %s', dir(vnf_dict))
-        LOG.info('log : vnf_dict.values() is %s', vnf_dict.values())
+        LOG.info('log : args is %s', args)
+        #LOG.info('log : dir(vnf_dict) is %s', dir(vnf_dict))
+        #LOG.info('log : vnf_dict.values() is %s', vnf_dict.values())
         #LOG.info('log : dir(context.session) is %s', dir(context.session))
         #LOG.info('log : dir(vnf_dict) is %s', dir(vnf_dict))
+        LOG.info('log : vnf %s is dead and needs to be respawned', vnf_old_id)
         nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
         LOG.info('NFVO_plugin is called')
-
+        
         #To defined Check VNFFG
-
         # vnf_new_id =  vnf_old_id
         # nfvo_plugin.mark_event(context, vnf_old_id,vnf_new_id)
