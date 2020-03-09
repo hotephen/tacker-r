@@ -38,7 +38,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
     def execute_action(self, plugin, context, vnf_dict, args):
         vnf_old_id = vnf_dict['id']
         LOG.info('vnf %s is dead and needs to be respawned', vnf_old_id)
-
+        LOG.info('log : context is %s', context)
         nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
         LOG.info('NFVO_plugin is called')
 
