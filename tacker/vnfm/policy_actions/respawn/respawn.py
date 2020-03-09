@@ -34,7 +34,7 @@ class VNFActionRespawn(abstract_action.AbstractPolicyAction):
         return 'Tacker VNF respawning policy'
 
     def execute_action(self, plugin, context, vnf_dict, args):
-        LOG.info('log1: args of respawn action is %s' args) ###
+        LOG.info('log1: args of respawn action is %s', args) ###
         
         vnf_id = vnf_dict['id']
         LOG.info('vnf %s is dead and needs to be respawned', vnf_id)
