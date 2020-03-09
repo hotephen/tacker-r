@@ -1002,10 +1002,11 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
             vnf_mapping_update = vnf_mapping_old
             LOG.info('log: vnffg["vnf_mapping"] is %s', vnffg['vnf_mapping'])
             
-            # for vnfd, vnf in vnf_mapping_old.items():
-            #     LOG.info('VNF id %s vs 0ld VNF Id %s', new_vnf_id,old_vnf_id)
-            #     if vnf == old_vnf_id:
-            #         vnf_mapping_update[vnfd] = 0 #new_vnf_id
-            #     LOG.info('VNFs id %s', vnf_mapping_update[vnfd])
-            # vnffg['vnf_mapping'] = vnf_mapping_update
-            # super(NfvoPlugin, self).update_vnffg(self.context, vnffg_id, vnffg)
+            for vnfd, vnf in vnf_mapping_old.items():
+                LOG.info('VNF id %s vs 0ld VNF Id %s', new_vnf_id,old_vnf_id)
+                if vnf == old_vnf_id:
+                    LOG.info('old_vnf is finded successfully, old_vnf_id is %s', vnf) # To be deleted
+                    #vnf_mapping_update[vnfd] = new_vnf_id
+                LOG.info('VNFs id %s', vnf_mapping_update[vnfd])
+            vnffg['vnf_mapping'] = vnf_mapping_update
+            #super(NfvoPlugin, self).update_vnffg(self.context, vnffg_id, vnffg)
