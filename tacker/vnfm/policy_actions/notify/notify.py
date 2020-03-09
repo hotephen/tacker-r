@@ -37,9 +37,10 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
     # Then, NFVO finds VNFFG which include the VNF and decides wether VNFFG should be deleted or changed.
     def execute_action(self, plugin, context, vnf_dict, args):
         vnf_old_id = vnf_dict['id']
-        LOG.info('vnf %s is dead and needs to be respawned', vnf_old_id)
+        LOG.info('log : dir(vnf_dict) is %s', dir(vnf_dict))
+        LOG.info('log : vnf %s is dead and needs to be respawned', vnf_old_id)
         LOG.info('log : context is %s', context)
-        LOG.info('log : dir(context) is %s', dir(context))
+        LOG.info('log : context["session"] is %s', context['session'])
         nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
         LOG.info('NFVO_plugin is called')
 
