@@ -40,7 +40,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         LOG.info('log : dir(vnf_dict) is %s', dir(vnf_dict))
         LOG.info('log : vnf %s is dead and needs to be respawned', vnf_old_id)
         LOG.info('log : context is %s', context)
-        LOG.info('log : context["session"] is %s', context['session'])
+        LOG.info('log : dir(context.session) is %s', dir(context.session))
         nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
         LOG.info('NFVO_plugin is called')
 
