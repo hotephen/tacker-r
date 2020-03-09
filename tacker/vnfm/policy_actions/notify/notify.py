@@ -47,5 +47,5 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         LOG.info('NFVO_plugin is called')
         
         #To defined Check VNFFG
-        # vnf_new_id =  vnf_old_id
-        # nfvo_plugin.mark_event(context, vnf_old_id,vnf_new_id)
+        vnf_new_id = vnf_old_id
+        nfvo_plugin.mark_event(context, vnf_old_id,vnf_new_id)
