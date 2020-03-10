@@ -11,13 +11,15 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 #
-
+from oslo_config import cfg
 from oslo_log import log as logging
 
 from tacker.plugins.common import constants
 from tacker.vnfm.policy_actions import abstract_action
 from tacker.vnfm import utils as vnfm_utils
 from tacker import manager
+from tacker.common import rpc
+from tacker.common import topics
 
 LOG = logging.getLogger(__name__)
 
@@ -47,5 +49,27 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         LOG.info('NFVO_plugin is called')
         
         #To defined Check VNFFG
-        vnf_new_id = vnf_old_id
-        nfvo_plugin.mark_event(context, vnf_old_id,vnf_new_id)
+#        vnf_new_id = vnf_old_id
+#        nfvo_plugin.mark_event(context, vnf_old_id,vnf_new_id)
+
+        def start_rpc_listners():
+            self.endpoints = [self]
+            self.connection = rpc.create_connection()
+            LOG.info('log: self.connection = %s', self.connection) ###
+            self.connection.create_consumer(topics.TOPIC_ACTION_KILL,
+                                            self.endpoints, fanout=False,
+                                            host=vnf_old_id)
+            LOG.info('log: create_consumer completed') ###
+            return self.connection.consume_in_threads()
+
+        try:
+            rpc.init_action_rpc(cfg.CONF) ###
+            LOG.info('log: cfg.CONF = %s', cfg.CONF) ###
+            servers = start_rpc_listener()
+
+        except Exception:
+            LOG.exception('failed to start rpc')
+            return 'FAILED'
+
+        
+

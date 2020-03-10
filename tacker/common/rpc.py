@@ -268,9 +268,9 @@ class Service(service.Service):
                   self.topic)
 
         endpoints = [self.manager]
+        LOG.info('log: endpoints = %s', endpoints) ###
 
         self.conn.create_consumer(self.topic, endpoints)
-
         # Hook to allow the manager to do other initializations after
         # the rpc connection is created.
         if callable(getattr(self.manager, 'initialize_service_hook', None)):
@@ -300,11 +300,15 @@ class Connection(object):
         target = oslo_messaging.Target(
             topic=topic, server=host or cfg.CONF.host, fanout=fanout,
             exchange=exchange)
+        LOG.info('log: target = %s', target) ###
+            
         serializer = objects_base.TackerObjectSerializer()
         server = get_server(target, endpoints, serializer)
+        LOG.info('log: server = %s', server) ###
         self.servers.append(server)
 
     def consume_in_threads(self):
+        LOG.info('log: consume_in_threads is called') ###
         for server in self.servers:
             server.start()
         return self.servers
