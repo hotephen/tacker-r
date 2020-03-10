@@ -65,7 +65,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         try:
             rpc.init_action_rpc(cfg.CONF) ###
             LOG.info('log: dir(cfg.CONF) = %s', dir(cfg.CONF)) ###
-            servers = start_rpc_listeners()
+            servers = self.start_rpc_listeners()
 
         except Exception:
             LOG.exception('failed to start rpc')
