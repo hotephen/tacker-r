@@ -52,7 +52,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
 #        vnf_new_id = vnf_old_id
 #        nfvo_plugin.mark_event(context, vnf_old_id,vnf_new_id)
 
-        def start_rpc_listners():
+        def start_rpc_listeners():
             self.endpoints = [self]
             self.connection = rpc.create_connection()
             LOG.info('log: self.connection = %s', self.connection) ###
@@ -65,7 +65,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         try:
             rpc.init_action_rpc(cfg.CONF) ###
             LOG.info('log: dir(cfg.CONF) = %s', dir(cfg.CONF)) ###
-            servers = self.start_rpc_listeners()
+            servers = start_rpc_listeners()
 
         except Exception:
             LOG.exception('failed to start rpc')
