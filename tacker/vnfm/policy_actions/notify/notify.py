@@ -41,15 +41,41 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
     # When event ocurrs, VNFM only notify event with related infromation  (e.g., vnf_id) to NFVO
     # Then, NFVO finds VNFFG which include the VNF and decides wether VNFFG should be deleted or changed.
     def execute_action(self, plugin, context, vnf_dict, args):
-        vnf_old_id = vnf_dict['id']
-        LOG.info('log : args is %s', args)
-        #LOG.info('log : dir(vnf_dict) is %s', dir(vnf_dict))
-        #LOG.info('log : vnf_dict.values() is %s', vnf_dict.values())
-        #LOG.info('log : dir(context.session) is %s', dir(context.session))
-        #LOG.info('log : dir(vnf_dict) is %s', dir(vnf_dict))
-        LOG.info('log : vnf %s is dead and needs to be respawned', vnf_old_id)
-        nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
-        LOG.info('NFVO_plugin is called')
+        # Respawn Action
+        vnf_id = vnf_dict['id']
+        LOG.info('vnf %s is dead and needs to be respawned', vnf_id)
+        attributes = vnf_dict['attributes']
+        vim_id = vnf_dict['vim_id']
+
+        def _update_failure_count():
+            failure_count = int(attributes.get('failure_count', '0')) + 1
+            failure_count_str = str(failure_count)
+            LOG.debug("vnf %(vnf_id)s failure count %(failure_count)s",
+                      {'vnf_id': vnf_id, 'failure_count': failure_count_str})
+            attributes['failure_count'] = failure_count_str
+            attributes['dead_instance_id_' + failure_count_str] = vnf_dict[
+                'instance_id']
+
+        def _fetch_vim(vim_uuid):
+            vim_res = vim_client.VimClient().get_vim(context, vim_uuid)
+            return vim_res
+
+        def _delete_heat_stack(vim_auth):
+            placement_attr = vnf_dict.get('placement_attr', {})
+            region_name = placement_attr.get('region_name')
+            heatclient = hc.HeatClient(auth_attr=vim_auth,
+                                       region_name=region_name)
+            heatclient.delete(vnf_dict['instance_id'])
+            LOG.debug("Heat stack %s delete initiated",
+                      vnf_dict['instance_id'])
+            _log_monitor_events(context, vnf_dict, "ActionRespawnHeat invoked")
+
+        def _respawn_vnf():
+            update_vnf_dict = plugin.create_vnf_sync(context, vnf_dict)
+            LOG.info('respawned new vnf %s', update_vnf_dict['id'])
+            plugin.config_vnf(context, update_vnf_dict)
+            return update_vnf_dict
+
 
         def start_rpc_listeners():
             self.endpoints = [self]
@@ -64,11 +90,28 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
 
             return self.connection.consume_in_threads()
 
-        #To defined Check VNFFG
-        vnf_new_id = vnf_old_id
-#        nfvo_plugin.mark_event(context, vnf_old_id,vnf_new_id)
+        # 1.Respawn Action
+        if plugin._mark_vnf_dead(vnf_dict['id']):
+            _update_failure_count()
+            vim_res = _fetch_vim(vim_id)
+            if vnf_dict['attributes'].get('monitoring_policy'):
+                plugin._vnf_monitor.mark_dead(vnf_dict['id'])
+                _delete_heat_stack(vim_res['vim_auth'])
+                updated_vnf = _respawn_vnf()
+                plugin.add_vnf_to_monitor(context, updated_vnf)
+                LOG.debug("VNF %s added to monitor thread",
+                          updated_vnf['id'])
+            if vnf_dict['attributes'].get('alarming_policy'):
+                _delete_heat_stack(vim_res['vim_auth'])
+                vnf_dict['attributes'].pop('alarming_policy')
+                _respawn_vnf()        
+        
 
-        # Start rpc connection
+        # 2. Notify and Healing Action        
+        vnf_new_id = updated_vnf['id']
+        LOG.info('log : new_vnf %s is respawned and needs to notify', vnf_new_id)
+        
+        # 2.1 Start rpc connection
         try:
             rpc.init_action_rpc(cfg.CONF) ###
             servers = start_rpc_listeners()
@@ -76,30 +119,27 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
             LOG.exception('failed to start rpc')
             return 'FAILED'
 
-        # Call 'vnf_respawning_event' method via RPC
+        # 2.2 Call 'vnf_respawning_event' method via ConductorRPC
         try:
             target = AutoHealingRPC.AutoHealingRPC.target
             rpc_client = rpc.get_client(target)
             cctxt = rpc_client.prepare()
-            
-            #LOG.info('log: rpc_client = %s', rpc_client) ###
-            #LOG.info('log: rpc_server = %s', rpc.get_server(target, self.endpoints)) ###
-            #LOG.info('log: cctxt = %s', cctxt) ###
 
             # Get new_VNF status from VNF_DB
             status = cctxt.call(t_context.get_admin_context_without_session(),
-                                'vnf_respawning_event', #conductor_server.vnf_respawning_event
-                                vnf_id=vnf_new_id) #
-            LOG.info('log: status = %s', status) ###
+                                'vnf_respawning_event',                                vnf_id=vnf_new_id)
+            LOG.info('log: new_vnf status = %s', status) ###
 
             # Call vnffg-healing function
+            nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
+            LOG.info('NFVO_plugin is called')
             nfvo_plugin.mark_event(context, vnf_old_id, vnf_new_id)
 
         except Exception:
             LOG.exception('failed to call rpc')
             return 'FAILED'
 
-        # Stop rpc connection
+        # 2.3 Stop rpc connection
         for server in servers:
             try:
                 server.stop()
