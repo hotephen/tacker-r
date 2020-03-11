@@ -13,6 +13,7 @@
 #
 from oslo_config import cfg
 from oslo_log import log as logging
+from oslo_utils import timeutils
 
 from tacker.db.common_services import common_services_db_plugin
 from tacker.plugins.common import constants
