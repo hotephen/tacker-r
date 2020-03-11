@@ -50,9 +50,22 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         LOG.info('log : vnf %s is dead and needs to be respawned', vnf_old_id)
         nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
         LOG.info('NFVO_plugin is called')
-        
+
+        def start_rpc_listeners():
+            self.endpoints = [self]
+            self.connection = rpc.create_connection()
+            self.connection.create_consumer(topics.TOPIC_ACTION_KILL,
+                                            self.endpoints, fanout=False,
+                                            host=vnf_old_id)
+
+            LOG.info('log: self.endpoints = %s', self.endpoints) ###
+            LOG.info('log: self.connection = %s', self.connection) ###
+            LOG.info('log: create_consumer completed') ###
+
+            return self.connection.consume_in_threads()
+
         #To defined Check VNFFG
-#        vnf_new_id = vnf_old_id
+        vnf_new_id = vnf_old_id
 #        nfvo_plugin.mark_event(context, vnf_old_id,vnf_new_id)
 
         # Start rpc connection
@@ -69,33 +82,26 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
             rpc_client = rpc.get_client(target)
             LOG.info('log: rpc_client = %s', rpc_client) ###
             LOG.info('log: rpc_server = %s', rpc.get_server(target, self.endpoints)) ###
-            
             cctxt = rpc_client.prepare()
             LOG.info('log: cctxt = %s', cctxt) ###
+
+            # Get new_VNF status from VNF_DB
             status = cctxt.call(t_context.get_admin_context_without_session(),
                                 'vnf_respawning_event', #conductor_server.vnf_respawning_event
-                                vnf_id=vnf_id) #
+                                vnf_id=vnf_new_id) #
             LOG.info('log: status = %s', status) ###
+
+            # Call vnffg-healing function
+            nfvo_plugin.mark_event(context, vnf_old_id, vnf_new_id)
+
+        except Exception:
+            LOG.exception('failed to call rpc')
+            return 'FAILED'
 
         # Stop rpc connection
         for server in servers:
             try:
                 server.stop()
             except Exception:
-                LOG.exception(
-                    'failed to stop rpc connection for vnf %s',
-                    vnf_id)
-    
-
-        def start_rpc_listeners():
-            self.endpoints = [self]
-            self.connection = rpc.create_connection()
-            self.connection.create_consumer(topics.TOPIC_ACTION_KILL,
-                                            self.endpoints, fanout=False,
-                                            host=vnf_old_id)
-
-            LOG.info('log: self.endpoints = %s', self.endpoints) ###
-            LOG.info('log: self.connection = %s', self.connection) ###
-            LOG.info('log: create_consumer completed') ###
-
-            return self.connection.consume_in_threads()
+                LOG.exception('failed to stop rpc connection for vnf %s',
+                             vnf_id)
