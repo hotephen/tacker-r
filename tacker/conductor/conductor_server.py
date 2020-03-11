@@ -48,6 +48,7 @@ from tacker import service as tacker_service
 from tacker import version
 
 from tacker.db.vnfm import vnfm_db
+from tacker.extensions import vnfm
 
 CONF = tacker.conf.CONF
 LOG = logging.getLogger(__name__)
