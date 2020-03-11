@@ -90,12 +90,12 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
             return update_vnf_dict
 
 
-        def start_rpc_listeners():
+        def start_rpc_listeners(vnf_id):
             self.endpoints = [self]
             self.connection = rpc.create_connection()
             self.connection.create_consumer(topics.TOPIC_ACTION_KILL,
                                             self.endpoints, fanout=False,
-                                            host=vnf_old_id)
+                                            host=vnf_id)
 
             LOG.info('log: self.endpoints = %s', self.endpoints) ###
             LOG.info('log: self.connection = %s', self.connection) ###
@@ -121,13 +121,13 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         
 
         # 2. Notify and Healing Action        
-        vnf_new_id = updated_vnf['id']
-        LOG.info('log : new_vnf %s is respawned and needs to notify', vnf_new_id)
+        new_vnf_id = updated_vnf['id']
+        LOG.info('log : new_vnf %s is respawned and needs to notify', new_vnf_id)
         
         # 2.1 Start rpc connection
         try:
             rpc.init_action_rpc(cfg.CONF) ###
-            servers = start_rpc_listeners()
+            servers = start_rpc_listeners(new_vnf_id)
         except Exception:
             LOG.exception('failed to start rpc')
             return 'FAILED'
@@ -140,13 +140,13 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
 
             # Get new_VNF status from VNF_DB
             status = cctxt.call(t_context.get_admin_context_without_session(),
-                                'vnf_respawning_event',                                vnf_id=vnf_new_id)
+                                'vnf_respawning_event',                                vnf_id=new_vnf_id)
             LOG.info('log: new_vnf status = %s', status) ###
 
             # Call vnffg-healing function
             nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
             LOG.info('NFVO_plugin is called')
-            nfvo_plugin.mark_event(context, vnf_old_id, vnf_new_id)
+            nfvo_plugin.mark_event(context, vnf_id, new_vnf_id)
 
         except Exception:
             LOG.exception('failed to call rpc')
