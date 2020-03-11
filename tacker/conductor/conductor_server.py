@@ -150,13 +150,16 @@ class Conductor(manager.Manager):
             try:
                 query = context.session.query(vnfm_db.VNF).filter_by(id=vnf_id).first()
                 LOG.info('log: query is %s', query)
+                status = query['status']
+                LOG.info('log: VNF status is %s', status)
+
                 #query = context.session.query(vnfm_db.VNF)
                 #vnf = query.filter(vnfm_db.VNF.id == vnf_id).filter(
                 #    vnfm_db.VNF.status.in_(constants.ACTIVE)).one() # To be constants.PENDING_CREATE
             except orm_exc.NoResultFound:
                 raise vnfm.VNFNotFound(vnf_id=vnf_id)
 
-        return query
+        return status
         # remember this method should return to 'status' in active
 
     def _create_software_images(self, context, sw_image, flavour_uuid):
