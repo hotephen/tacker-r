@@ -14,9 +14,12 @@
 from oslo_config import cfg
 from oslo_log import log as logging
 
+from tacker.db.common_services import common_services_db_plugin
 from tacker.plugins.common import constants
+from tacker.vnfm.infra_drivers.openstack import heat_client as hc
 from tacker.vnfm.policy_actions import abstract_action
 from tacker.vnfm import utils as vnfm_utils
+from tacker.vnfm import vim_client
 from tacker import manager
 from tacker.common import rpc
 from tacker.common import topics
