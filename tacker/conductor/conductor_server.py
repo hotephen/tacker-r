@@ -146,12 +146,12 @@ class Conductor(manager.Manager):
     def vnf_respawning_event(self, context, vnf_id):
         LOG.debug('vnf respawning event called sucesfully: %s', vnf_id)
         vnf = None
-        with context.session.begin(subtransactions=True): ####
+        with context.session.begin(subtransactions=True): 
             try:
                 query = context.session.query(vnfm_db.VNF).filter_by(id=vnf_id).first()
-                LOG.info('log: query is %s', query)
+                LOG.info('log: query is %s', query) ###
                 status = query['status']
-                LOG.info('log: VNF status is %s', status)
+                LOG.info('log: VNF status is %s', status) ###
 
                 #query = context.session.query(vnfm_db.VNF)
                 #vnf = query.filter(vnfm_db.VNF.id == vnf_id).filter(

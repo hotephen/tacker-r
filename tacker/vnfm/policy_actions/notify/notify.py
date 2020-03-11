@@ -80,10 +80,11 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         try:
             target = AutoHealingRPC.AutoHealingRPC.target
             rpc_client = rpc.get_client(target)
-            LOG.info('log: rpc_client = %s', rpc_client) ###
-            LOG.info('log: rpc_server = %s', rpc.get_server(target, self.endpoints)) ###
             cctxt = rpc_client.prepare()
-            LOG.info('log: cctxt = %s', cctxt) ###
+            
+            #LOG.info('log: rpc_client = %s', rpc_client) ###
+            #LOG.info('log: rpc_server = %s', rpc.get_server(target, self.endpoints)) ###
+            #LOG.info('log: cctxt = %s', cctxt) ###
 
             # Get new_VNF status from VNF_DB
             status = cctxt.call(t_context.get_admin_context_without_session(),
