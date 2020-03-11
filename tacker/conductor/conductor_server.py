@@ -140,6 +140,21 @@ class Conductor(manager.Manager):
             t_admin_context.session.add(event_db)
         return status
 
+    ###TODO:
+    def vnf_respawning_event(self, context, vnf_id):
+        LOG.debug('vnf respawning event called sucesfully: %s', vnf_id)
+        vnf = None
+        with context.session.begin(subtransactions=True): ####
+            try:
+                query = context.session.query(vnfm_db.VNF)
+                vnf = query.filter(vnfm_db.VNF.id == vnf_id).filter(
+                    vnfm_db.VNF.status.in_(constants.ACTIVE)).one() # To be constants.PENDING_CREATE
+            except orm_exc.NoResultFound:
+                raise vnfm.VNFNotFound(vnf_id=vnf_id)
+
+        return vnf
+        # remember this method should return to 'status' in active
+
     def _create_software_images(self, context, sw_image, flavour_uuid):
         vnf_sw_image = objects.VnfSoftwareImage(context=context)
         vnf_sw_image.flavour_uuid = flavour_uuid
