@@ -30,6 +30,15 @@ from tacker import context as t_context
 LOG = logging.getLogger(__name__)
 
 
+def _log_monitor_events(context, vnf_dict, evt_details):
+    _cos_db_plg = common_services_db_plugin.CommonServicesPluginDb()
+    _cos_db_plg.create_event(context, res_id=vnf_dict['id'],
+                             res_type=constants.RES_TYPE_VNF,
+                             res_state=vnf_dict['status'],
+                             evt_type=constants.RES_EVT_MONITOR,
+                             tstamp=timeutils.utcnow(),
+                             details=evt_details)
+
 class VNFActionNotify(abstract_action.AbstractPolicyAction):
     def get_type(self):
         return 'notify'
