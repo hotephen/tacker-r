@@ -156,7 +156,8 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
                     #TODO:
 
                 except Exception:
-                    raise vnfm.InfraDriverUnreachable(service="Heat API service")
+                    LOG.exception('failed to call heat API')
+                    return 'FAILED'
             # Call vnffg-healing function
             nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
             LOG.info('NFVO_plugin is called')
