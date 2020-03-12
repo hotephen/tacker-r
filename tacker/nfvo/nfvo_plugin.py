@@ -989,11 +989,11 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         return ns['id']
 
     @log.log
-    def mark_event(self, context, old_vnf_id, new_vnf_id):
+    def mark_event(self, context, vnf_id):
         # To find vnffg_number
-        LOG.info('NFVO resecives the failure event of VNF %s', old_vnf_id)
-
-        vnffg_list = super(NfvoPlugin, self).get_vnffgs_from_vnf(context, old_vnf_id)
+        LOG.info('NFVO resecives the failure event of VNF %s', vnf_id)
+        # Get the list of vnffgs which include the respawned VNF
+        vnffg_list = super(NfvoPlugin, self).get_vnffgs_from_vnf(context, vnf_id)
         LOG.info('VNFFG list updated %s', vnffg_list)
         for vnffg in vnffg_list:
             vnffg_id = vnffg['id']
@@ -1003,10 +1003,12 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
             LOG.info('log: vnffg["vnf_mapping"] is %s', vnffg['vnf_mapping'])
             
             for vnfd, vnf in vnf_mapping_old.items():
-                LOG.info('VNF id %s vs 0ld VNF Id %s', new_vnf_id,old_vnf_id)
-                if vnf == old_vnf_id:
-                    LOG.info('old_vnf is finded successfully, old_vnf_id is %s', vnf) # To be deleted
+                if vnf == vnf_id:
+                    LOG.info('vnf finding is successful : %s', vnf) ###
+                    # find new vnf resource and CP
+                    #TODO:
+
                     #vnf_mapping_update[vnfd] = new_vnf_id
                 LOG.info('VNFs id %s', vnf_mapping_update[vnfd])
             vnffg['vnf_mapping'] = vnf_mapping_update
-            #super(NfvoPlugin, self).update_vnffg(self.context, vnffg_id, vnffg)
+            #super(NfvoPlugin, self).update_vnffg(self.context, vnffg_id, vnffg) #TODO:

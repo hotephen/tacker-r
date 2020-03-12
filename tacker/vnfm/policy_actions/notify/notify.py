@@ -142,11 +142,25 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
             status = cctxt.call(t_context.get_admin_context_without_session(),
                                 'vnf_respawning_event',                                vnf_id=new_vnf_id)
             LOG.info('log: new_vnf status = %s', status) ###
+            if status == constatns.ACTIVE:
+                # Get new_VNF CP from Heat API
+                instance_id = updated_vnf['instance_id']
+                LOG.info('log: new_vnf instance id = %s', instance_id) ###
+                placement_attr = vnf_dict.get('placement_attr', {})
+                region_name = placement_attr.get('region_name')
+                try:
+                    heatclient = hc.HeatClient(auth_attr=vim_auth,
+                                            region_name=region_name)
+                    resource_ids = heatclient.resource_get_list(instance_id)
+                    LOG.info('log: resource_ids = %s', resource_ids.items()) ###
+                    #TODO:
 
+                except Exception:
+                    raise vnfm.InfraDriverUnreachable(service="Heat API service")
             # Call vnffg-healing function
             nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
             LOG.info('NFVO_plugin is called')
-            nfvo_plugin.mark_event(context, vnf_id, new_vnf_id)
+#            nfvo_plugin.mark_event(context, vnf_id) #TODO:
 
         except Exception:
             LOG.exception('failed to call rpc')
