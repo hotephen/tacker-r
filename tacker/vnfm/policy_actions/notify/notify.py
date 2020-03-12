@@ -58,7 +58,6 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         vnf_id = vnf_dict['id']
         vim_id = vnf_dict['vim_id']
         attributes = vnf_dict['attributes']
-        old_cp_dict = get_connection_points(vnf_dict, vim_id)
         LOG.info('vnf %s is dead and needs to be respawned', vnf_id)
 
         def _update_failure_count():
@@ -126,6 +125,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
                     return 'FAILED'
             return cp_dict
 
+        old_cp_dict = get_connection_points(vnf_dict, vim_id)
 
         # 1.Respawn Action
         if plugin._mark_vnf_dead(vnf_dict['id']):
