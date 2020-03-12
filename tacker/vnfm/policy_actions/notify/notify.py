@@ -174,9 +174,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
                 LOG.info('NFVO_plugin is called')
                 LOG.info('old_cp_dict is %s', old_cp_dict)
                 LOG.info('new_cp_dict is %s', new_cp_dict)
-
-    #           nfvo_plugin.mark_event(context, vnf_id, old_cp_dict, new_cp_dict)
-    
+                nfvo_plugin.mark_event(context, vnf_dict, old_cp_dict, new_cp_dict)
 
         except Exception:
             LOG.exception('failed to call rpc')
