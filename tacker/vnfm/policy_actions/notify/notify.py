@@ -55,11 +55,11 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
     # Then, NFVO finds VNFFG which include the VNF and decides wether VNFFG should be deleted or changed.
     def execute_action(self, plugin, context, vnf_dict, args):
         # Respawn Action
-        LOG.info('vnf %s is dead and needs to be respawned', vnf_id)
         vnf_id = vnf_dict['id']
         vim_id = vnf_dict['vim_id']
         attributes = vnf_dict['attributes']
         old_cp_dict = get_connection_points(vnf_dict, vim_id)
+        LOG.info('vnf %s is dead and needs to be respawned', vnf_id)
 
         def _update_failure_count():
             failure_count = int(attributes.get('failure_count', '0')) + 1
@@ -188,4 +188,4 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
                 server.stop()
             except Exception:
                 LOG.exception('failed to stop rpc connection for vnf %s',
-                             vnf_id)
+                             new_vnf_id)
