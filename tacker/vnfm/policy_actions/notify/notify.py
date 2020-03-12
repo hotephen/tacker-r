@@ -153,7 +153,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
                     heatclient = hc.HeatClient(auth_attr=vim_res['vim_auth'],
                                             region_name=region_name)
                     resource_ids = heatclient.resource_get_list(instance_id)
-                    LOG.info('log: resource_ids = %s', resource_ids.items()) ###
+                    LOG.info('log: resource_ids = %s', resource_ids) ###
                     #TODO:
 
                 except Exception:
