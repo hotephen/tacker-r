@@ -166,7 +166,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
                     #             for name, info in vnf_details.items()]
 
                     cp_dict = {}
-                    for name, info in vnf_details.items()
+                    for name, info in vnf_details.items():
                         if info.get('type') == 'OS::Neutron::Port':
                             cp_dict[name] = info.get('id')
                     
