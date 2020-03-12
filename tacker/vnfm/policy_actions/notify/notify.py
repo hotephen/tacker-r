@@ -140,16 +140,17 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
 
             # Get new_VNF status from VNF_DB
             status = cctxt.call(t_context.get_admin_context_without_session(),
-                                'vnf_respawning_event',                                vnf_id=new_vnf_id)
+                                'vnf_respawning_event', vnf_id=new_vnf_id)
             LOG.info('log: new_vnf status = %s', status) ###
             if status == constants.ACTIVE:
                 # Get new_VNF CP from Heat API
                 instance_id = updated_vnf['instance_id']
                 LOG.info('log: new_vnf instance id = %s', instance_id) ###
-                placement_attr = vnf_dict.get('placement_attr', {})
+                placement_attr = updated_vnf.get('placement_attr', {})
                 region_name = placement_attr.get('region_name')
+                vim_res = _fetch_vim(vim_id)
                 try:
-                    heatclient = hc.HeatClient(auth_attr=vim_auth,
+                    heatclient = hc.HeatClient(auth_attr=vim_res['vim_auth'],
                                             region_name=region_name)
                     resource_ids = heatclient.resource_get_list(instance_id)
                     LOG.info('log: resource_ids = %s', resource_ids.items()) ###
