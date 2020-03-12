@@ -1006,7 +1006,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         # 
         for vnffg in vnffg_list:
             vnffg_id = vnffg['id']
-            LOG.debug('log: VNFFG %s, vnffg)
+            LOG.debug('log: VNFFG %s', vnffg)
             vnf_mapping_old = vnffg['vnf_mapping']
             LOG.info('log: vnffg["vnf_mapping"] is %s', vnffg['vnf_mapping']) ###
             vim_obj = self._get_vim_from_vnf(context,
