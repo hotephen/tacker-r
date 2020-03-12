@@ -157,9 +157,11 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
                             {"id": resource.physical_resource_id,
                              "type": resource.resource_type}
                             for resource in resources_ids}
-                    LOG.info('log: resource_ids = %s', resource_ids) ###
+                    LOG.info('log: resource_ids = %s', resources_ids) ###
                     #TODO:
-                    
+                    # cp_dict = {}
+                    # if details_dict['resource_name']['type'] == 'links'
+                    #     cp_dict = {}
                 except Exception:
                     LOG.exception('failed to call heat API')
                     return 'FAILED'
