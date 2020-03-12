@@ -989,12 +989,12 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         return ns['id']
 
     @log.log
-    def mark_event(self, context, vnf_id):
+    def mark_event(self, context, vnf_id, old_cp_dict, new_cp_dict):
         # To find vnffg_number
-        LOG.info('NFVO resecives the failure event of VNF %s', vnf_id)
+        LOG.info('NFVO is healing VNFFG which has VNF %s', vnf_id)
         # Get the list of vnffgs which include the respawned VNF
         vnffg_list = super(NfvoPlugin, self).get_vnffgs_from_vnf(context, vnf_id)
-        LOG.info('VNFFG list updated %s', vnffg_list)
+        LOG.info('VNFFG list %s', vnffg_list)
         for vnffg in vnffg_list:
             vnffg_id = vnffg['id']
             LOG.info('VNFFG %s should be healed', vnffg_id)
@@ -1005,9 +1005,8 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
             for vnfd, vnf in vnf_mapping_old.items():
                 if vnf == vnf_id:
                     LOG.info('vnf finding is successful : %s', vnf) ###
-                    # find new vnf resource and CP
-                    #TODO:
-
+                    #TODO: 
+                    old_
                     #vnf_mapping_update[vnfd] = new_vnf_id
                 LOG.info('VNFs id %s', vnf_mapping_update[vnfd])
             vnffg['vnf_mapping'] = vnf_mapping_update

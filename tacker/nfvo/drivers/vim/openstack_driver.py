@@ -614,6 +614,64 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
                         neutronclient_.port_pair_delete(pp_id)
         return pc_id
 
+    def heal_chain(self, chain_id, vnf, old_cp_list, new_cp_list
+                     symmetrical=None, auth_attr=None):
+        #old_cp_list = [cp_id1, cp_id2]
+        #new_cp_list = [cp_id1, cp_id2]
+        LOG.info("heal_chain")###
+        if not auth_attr:
+            LOG.warning("auth information required for n-sfc driver")
+            return None
+
+        neutronclient_ = NeutronClient(auth_attr)
+        port_pairs_list = neutronclient_.port_pair_list()
+        port_pair_groups_list = neutronclient_.port_pair_group_list()
+        port_chains_list = neutronclient_.port_chain_list()
+        new_ppgs = []
+        updated_port_chain = dict()
+        pc_info = neutronclient_.port_chain_show(chain_id)
+        old_ppgs = pc_info['port_chain']['port_pair_groups']
+            # old_ppgs = ["ppg_id1", "ppg_id2"]
+        old_ppgs_dict = {neutronclient_.port_pair_group_show(ppg_id)
+            ['port_pair_group']['name'].split('-')[0]: \
+            ppg_id for ppg_id in old_ppgs}
+            # old_ppgs_dict = {VNF1 : ppg_id1, VNF2 : ppg_id2}
+        
+        if vnf['name'] in old_ppgs_dict:
+            target_ppg_id = old_ppgs_dict[vnf['name']]
+                # target_ppg_id = "ppg_id"        
+            target_ppg_dict = neutronclient_.port_pair_group_show(target_ppg_id)
+
+        # Remove old port_pair
+        for old_cp_id in old_cp_list:
+            target_ppg_dict['port_pairs'].remove(old_cp_id)
+
+        # Create Port Pair
+        num_cps = len(new_cp_list)
+        if num_cps not in [1, 2]:
+            LOG.warning("Failed due to wrong number "
+                        "of connection points: expected [1 | 2],"
+                        "got %(cps)d", {'cps': num_cps})
+            raise nfvo.UpdateChainException(
+                message="Invalid number of connection points")
+        if num_cps == 1:
+            ingress = new_cp_list[0]
+            egress = new_cp_list[0]
+        else:
+            ingress = new_cp_list[0]
+            egress = new_cp_list[1]
+        port_pair = {}
+        port_pair['name'] = vnf['name'] + 'respawned-connection-points'
+        port_pair['description'] = 'port pair for' + vnf['name']
+        port_pair['ingress'] = ingress
+        port_pair['egress'] = egress
+        port_pair_id = neutronclient_.port_pair_create(port_pair)
+
+        target_ppg_dict['port_pairs'].append(port_pair_id)
+        ppg = neutronclient_.port_pair_group_update(ppg_id=updating_ppg_id) 
+        
+        return ppg
+
     def delete_chain(self, chain_id, auth_attr=None):
         if not auth_attr:
             LOG.warning("auth information required for n-sfc driver")

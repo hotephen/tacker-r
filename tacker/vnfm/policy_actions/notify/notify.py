@@ -55,10 +55,11 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
     # Then, NFVO finds VNFFG which include the VNF and decides wether VNFFG should be deleted or changed.
     def execute_action(self, plugin, context, vnf_dict, args):
         # Respawn Action
-        vnf_id = vnf_dict['id']
         LOG.info('vnf %s is dead and needs to be respawned', vnf_id)
-        attributes = vnf_dict['attributes']
+        vnf_id = vnf_dict['id']
         vim_id = vnf_dict['vim_id']
+        attributes = vnf_dict['attributes']
+        old_cp_dict = get_connection_points(vnf_dict, vim_id)
 
         def _update_failure_count():
             failure_count = int(attributes.get('failure_count', '0')) + 1
@@ -96,12 +97,35 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
             self.connection.create_consumer(topics.TOPIC_ACTION_KILL,
                                             self.endpoints, fanout=False,
                                             host=vnf_id)
-
-            LOG.info('log: self.endpoints = %s', self.endpoints) ###
-            LOG.info('log: self.connection = %s', self.connection) ###
-            LOG.info('log: create_consumer completed') ###
-
+            #LOG.info('log: self.endpoints = %s', self.endpoints) ###
+            #LOG.info('log: self.connection = %s', self.connection) ###
+            #LOG.info('log: create_consumer completed') ###
             return self.connection.consume_in_threads()
+        
+        def get_connection_points(vnf_dict, vim_id):
+            instance_id = vnf_dict['instance_id']
+            placement_attr = vnf_dict.get('placement_attr', {})
+            region_name = placement_attr.get('region_name')
+            vim_res = _fetch_vim(vim_id)
+            try:
+                heatclient = hc.HeatClient(auth_attr=vim_res['vim_auth'],
+                                            region_name=region_name)
+                resources_ids = heatclient.resource_get_list(instance_id, 
+                                            nested_depth=2)
+                vnf_details = {resource.resource_name:
+                        {"id": resource.physical_resource_id,
+                         "type": resource.resource_type}
+                        for resource in resources_ids}
+                cp_dict = {}
+                for name, info in vnf_details.items():
+                    if info.get('type') == 'OS::Neutron::Port':
+                        cp_dict[name] = info.get('id')
+                LOG.info('log: cp_dict : %s', cp_dict) ###
+            except Exception:
+                    LOG.exception('failed to call heat API')
+                    return 'FAILED'
+            return cp_dict
+
 
         # 1.Respawn Action
         if plugin._mark_vnf_dead(vnf_dict['id']):
@@ -141,44 +165,18 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
             # Get new_VNF status from VNF_DB
             status = cctxt.call(t_context.get_admin_context_without_session(),
                                 'vnf_respawning_event', vnf_id=new_vnf_id)
-            LOG.info('log: new_vnf status = %s', status) ###
+            #LOG.info('log: new_vnf status = %s', status) ###
             if status == constants.ACTIVE:
                 # Get new_VNF CP from Heat API
-                instance_id = updated_vnf['instance_id']
-                LOG.info('log: new_vnf instance id = %s', instance_id) ###
-                placement_attr = updated_vnf.get('placement_attr', {})
-                region_name = placement_attr.get('region_name')
-                vim_res = _fetch_vim(vim_id)
-                try:
-                    heatclient = hc.HeatClient(auth_attr=vim_res['vim_auth'],
-                                            region_name=region_name)
-                    resources_ids = heatclient.resource_get_list(instance_id, nested_depth=2)                        
-                    
-                    vnf_details = {resource.resource_name:
-                            {"id": resource.physical_resource_id,
-                             "type": resource.resource_type}
-                            for resource in resources_ids}
+                new_cp_dict = get_connection_points(updated_vnf, vim_id)
+                # Call vnffg-healing function
+                nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
+                LOG.info('NFVO_plugin is called')
+                LOG.info('old_cp_dict is %s', old_cp_dict)
+                LOG.info('new_cp_dict is %s', new_cp_dict)
 
-                    #TODO:
-                    # resources = [{'name': name,
-                    #               'type': info.get('type'),
-                    #               'id': info.get('id')}
-                    #             for name, info in vnf_details.items()]
-
-                    cp_dict = {}
-                    for name, info in vnf_details.items():
-                        if info.get('type') == 'OS::Neutron::Port':
-                            cp_dict[name] = info.get('id')
-                    
-                    LOG.info('log: cp_dict : %s', cp_dict) ###
-                    
-                except Exception:
-                    LOG.exception('failed to call heat API')
-                    return 'FAILED'
-            # Call vnffg-healing function
-            nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
-            LOG.info('NFVO_plugin is called')
-#            nfvo_plugin.mark_event(context, vnf_id) #TODO:
+    #           nfvo_plugin.mark_event(context, vnf_id, old_cp_dict, new_cp_dict)
+    
 
         except Exception:
             LOG.exception('failed to call rpc')
