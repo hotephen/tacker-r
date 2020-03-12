@@ -152,16 +152,19 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
                 try:
                     heatclient = hc.HeatClient(auth_attr=vim_res['vim_auth'],
                                             region_name=region_name)
-                    resources_ids = heatclient.resource_get_list(instance_id)                        
-                    details_dict = {resource.resource_name:
+                    resources_ids = heatclient.resource_get_list(instance_id, nested_depth=2)                        
+                    vnf_details = {resource.resource_name:
                             {"id": resource.physical_resource_id,
                              "type": resource.resource_type}
                             for resource in resources_ids}
                     LOG.info('log: resource_ids = %s', resources_ids) ###
                     #TODO:
-                    # cp_dict = {}
-                    # if details_dict['resource_name']['type'] == 'links'
-                    #     cp_dict = {}
+                    resources = [{'name': name,
+                                  'type': info.get('type'),
+                                  'id': info.get('id')}
+                                for name, info in vnf_details.items()]
+                    LOG.info('log: resource_ids = %s', resources) ###
+                    
                 except Exception:
                     LOG.exception('failed to call heat API')
                     return 'FAILED'
