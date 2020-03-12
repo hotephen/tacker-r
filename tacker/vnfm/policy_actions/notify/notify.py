@@ -142,7 +142,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
             status = cctxt.call(t_context.get_admin_context_without_session(),
                                 'vnf_respawning_event',                                vnf_id=new_vnf_id)
             LOG.info('log: new_vnf status = %s', status) ###
-            if status == constatns.ACTIVE:
+            if status == constants.ACTIVE:
                 # Get new_VNF CP from Heat API
                 instance_id = updated_vnf['instance_id']
                 LOG.info('log: new_vnf instance id = %s', instance_id) ###
