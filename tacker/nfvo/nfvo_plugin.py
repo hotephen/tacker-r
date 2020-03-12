@@ -998,7 +998,8 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
             old_cp_list.append(cp_id)
         for cp_name, cp_id in new_cp_dict.items():
             new_cp_list.append(cp_id)
-
+        LOG.info('old_cp_list : %s', old_cp_list)
+        LOG.info('new_cp_list : %s', new_cp_list)
         # Get the list of vnffgs which include the respawned VNF
         vnffg_list = super(NfvoPlugin, self).get_vnffgs_from_vnf(context, vnf_id)
         LOG.info('VNFFG list %s', vnffg_list)
@@ -1009,20 +1010,19 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
             LOG.debug('log: VNFFG %s', vnffg)
             vnf_mapping_old = vnffg['vnf_mapping']
             LOG.info('log: vnffg["vnf_mapping"] is %s', vnffg['vnf_mapping']) ###
-            vim_obj = self._get_vim_from_vnf(context,
-                                    list(vnffg['vnf_mapping'].values())[0])
-            driver_type = vim_obj['type']
-            
-            """ for vnfd, vnf in vnf_mapping_old.items():
-                if vnf == vnf_id:
-                    result = self._vim_drivers.invoke(
-                        driver_type, 'heal_chain', 
-                        chain_id=sfc['instance_id'], vnf=vnf_dict, 
-                        old_cp_list=old_cp_list, new_cp_list=new_cp_list,
-                        auth_attr=vim_obj['auth_cred'])
+            # vim_obj = self._get_vim_from_vnf(context,
+            #                         list(vnffg['vnf_mapping'].values())[0])
+            # driver_type = vim_obj['type']
+            #     for vnfd, vnf in vnf_mapping_old.items():
+            #     if vnf == vnf_id:
+            #         result = self._vim_drivers.invoke(
+            #             driver_type, 'heal_chain', 
+            #             chain_id=sfc['instance_id'], vnf=vnf_dict, 
+            #             old_cp_list=old_cp_list, new_cp_list=new_cp_list,
+            #             auth_attr=vim_obj['auth_cred'])
 
-                    old_cp_list = 
-                    #vnf_mapping_update[vnfd] = new_vnf_id
-                LOG.info('VNFs id %s', vnf_mapping_update[vnfd])
-            vnffg['vnf_mapping'] = vnf_mapping_update """
+            #         old_cp_list = 
+            #         #vnf_mapping_update[vnfd] = new_vnf_id
+            #     LOG.info('VNFs id %s', vnf_mapping_update[vnfd])
+            # vnffg['vnf_mapping'] = vnf_mapping_update
             #super(NfvoPlugin, self).update_vnffg(self.context, vnffg_id, vnffg) #TODO:
