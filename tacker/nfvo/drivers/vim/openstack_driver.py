@@ -614,7 +614,7 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
                         neutronclient_.port_pair_delete(pp_id)
         return pc_id
 
-    def heal_chain(self, chain_id, vnf, old_cp_list, new_cp_list
+    def heal_chain(self, chain_id, vnf, old_cp_list, new_cp_list,
                      symmetrical=None, auth_attr=None):
         #old_cp_list = [cp_id1, cp_id2]
         #new_cp_list = [cp_id1, cp_id2]
