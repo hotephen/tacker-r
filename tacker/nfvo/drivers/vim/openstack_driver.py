@@ -640,42 +640,50 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
         LOG.info('log: port_chains_list %s', port_chains_list)
         LOG.info('log: pc_info %s', pc_info)
         LOG.info('log: old_ppgs %s', old_ppgs)
-        LOG.info('log: old_ppgs_dict %s', old_ppgs)
+        LOG.info('log: old_ppgs_dict %s', old_ppgs_dict)
 
-        # if vnf['name'] in old_ppgs_dict:
-        #     target_ppg_id = old_ppgs_dict[vnf['name']]
-        #         # target_ppg_id = "ppg_id"        
-        #     target_ppg_dict = neutronclient_.port_pair_group_show(target_ppg_id)
+        # Find old-port-pair
+        for pp in port_pairs_list['port_pairs']:
+            if vnf['name']+'-connection-points' == pp['name']:
+                target_pp_id = pp['id']    
+                target_pp_dict = neutronclient_.port_pair_show(target_pp_id)
+                LOG.info('log: target_ppg_dict : %s', target_pp_dict)
 
-        # # Remove old port_pair
-        # for old_cp_id in old_cp_list:
-        #     target_ppg_dict['port_pairs'].remove(old_cp_id)
+        # Find port-pair-group and delete old port-pair
+        if vnf['name'] in old_ppgs_dict:
+            target_ppg_id = old_ppgs_dict[vnf['name']]
+            target_ppg_dict = neutronclient_.port_pair_group_show(target_ppg_id)
+            LOG.info('log: target_ppg_dict : %s', target_ppg_dict)
+            #target_ppg_dict['port_pairs'].remove(target_pp_id)
 
-        # # Create Port Pair
-        # num_cps = len(new_cp_list)
-        # if num_cps not in [1, 2]:
-        #     LOG.warning("Failed due to wrong number "
-        #                 "of connection points: expected [1 | 2],"
-        #                 "got %(cps)d", {'cps': num_cps})
-        #     raise nfvo.UpdateChainException(
-        #         message="Invalid number of connection points")
-        # if num_cps == 1:
-        #     ingress = new_cp_list[0]
-        #     egress = new_cp_list[0]
-        # else:
-        #     ingress = new_cp_list[0]
-        #     egress = new_cp_list[1]
-        # port_pair = {}
-        # port_pair['name'] = vnf['name'] + 'respawned-connection-points'
-        # port_pair['description'] = 'port pair for' + vnf['name']
-        # port_pair['ingress'] = ingress
-        # port_pair['egress'] = egress
-        # port_pair_id = neutronclient_.port_pair_create(port_pair)
+        # Create new port-pair
+        num_cps = len(new_cp_list)
+        if num_cps not in [1, 2]:
+            LOG.warning("Failed due to wrong number "
+                        "of connection points: expected [1 | 2],"
+                        "got %(cps)d", {'cps': num_cps})
+            raise nfvo.UpdateChainException(
+                message="Invalid number of connection points")
+        if num_cps == 1:
+            ingress = new_cp_list[0]
+            egress = new_cp_list[0]
+        else:
+            ingress = new_cp_list[0]
+            egress = new_cp_list[1]
+        port_pair = {}
+        port_pair['name'] = vnf['name'] + 'respawned-connection-points'
+        port_pair['description'] = 'port pair for' + vnf['name']
+        port_pair['ingress'] = ingress
+        port_pair['egress'] = egress
+        #port_pair_id = neutronclient_.port_pair_create(port_pair)
+        LOG.info('log: port_pair : %s', port_pair)
 
+        # Append new port-pair to port-pair-group
         # target_ppg_dict['port_pairs'].append(port_pair_id)
-        # ppg = neutronclient_.port_pair_group_update(ppg_id=target_ppg_id) 
+        # ppg = neutronclient_.port_pair_group_update(ppg_id=target_ppg_id, 
+        #                                           ppg_dict=target_ppg_dict) 
         
-        # return ppg
+        #return ppg
 
     def delete_chain(self, chain_id, auth_attr=None):
         if not auth_attr:
@@ -866,7 +874,6 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
                 count = count + 1
         return True if count > 1 else False
 
-
 class NeutronClient(object):
     """Neutron Client class for networking-sfc driver"""
 
@@ -1041,3 +1048,13 @@ class NeutronClient(object):
         except nc_exceptions.NotFound:
             LOG.warning('port pair group %s not found', ppg_id)
             raise ValueError('port pair group %s not found' % ppg_id)
+    
+    ###TODO:
+    def port_pair_group_update(self, ppg_id, ppg_dict):
+        try:
+            ppg = self.client.update_port_pair_group(
+                ppg_id, {'port_pair_group': ppg_dict})
+        except nc_exceptions.BadRequest as e:
+            LOG.warning('update port pair group returns %s', e)
+            raise ValueError(str(e))
+        return ppg

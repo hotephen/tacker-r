@@ -1014,7 +1014,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
             sfc = super(NfvoPlugin, self).get_sfc(context, nfp['chain_id'])
             vnffg_name = list(vnffg['attributes']['vnffgd']['topology_template'] \
                                 ['groups'].keys())[0]
-            for cp in old_cp_dict.keys():
+            for cp in old_cp_dict():
                 if cp in vnffg['attributes']['vnffgd']['topology_template'] \
                                 ['groups'][vnffg_name]['properties'] \
                                 ['connection_point']:
