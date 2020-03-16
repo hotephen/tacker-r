@@ -1008,11 +1008,11 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         # 
         for vnffg in vnffg_list:
             vnffg_name = list(vnffg['attributes']['vnffgd']['topology_template'] \
-                                ['node_templates']['groups'].keys())[0]
+                                ['groups'].keys())[0]
             for cp in old_cp_dict.keys():
                 if cp in vnffg['attributes']['vnffgd']['topology_template'] \
-                                ['node_templates']['groups'][vnffg_name] \
-                                ['properties']['connection_point']:
+                                ['groups'][vnffg_name]['properties'] \
+                                ['connection_point']:
                     LOG.info('log: %s (%s) neededs to be changed', cp, old_cp_dict[cp])
                     old_cp = old_cp_dict[cp]
                     new_cp = new_cp_dict[cp]
