@@ -1007,10 +1007,21 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
 
         # 
         for vnffg in vnffg_list:
-            vnffg_id = vnffg['id']
-            LOG.debug('log: VNFFG %s', vnffg) ###
-            vnf_mapping_old = vnffg['vnf_mapping']
-            LOG.info('log: vnffg["vnf_mapping"] is %s', vnffg['vnf_mapping']) ###
+            vnffg_name = list(vnffg['attributes']['vnffgd']['topology_template'] \
+                                ['node_templates']['groups'].keys())[0]
+            for cp in old_cp_dict.keys():
+                if cp in vnffg['attributes']['vnffgd']['topology_template'] \
+                                ['node_templates']['groups'][vnffg_name] \
+                                ['properties']['connection_point']:
+                    LOG.info('log: %s (%s) neededs to be changed', cp, old_cp_dict[cp])
+                    old_cp = old_cp_dict[cp]
+                    new_cp = new_cp_dict[cp]
+        LOG.info('log: old_cp : %s', old_cp) ###
+        LOG.info('log: new_cp : %s', new_cp) ###
+            #vnffg_id = vnffg['id']
+            #LOG.debug('log: VNFFG %s', vnffg) ###
+            #vnf_mapping_old = vnffg['vnf_mapping']
+            #LOG.info('log: vnffg["vnf_mapping"] is %s', vnffg['vnf_mapping']) ###
         #     vim_obj = self._get_vim_from_vnf(context,
         #                             list(vnffg['vnf_mapping'].values())[0])
         #     driver_type = vim_obj['type']
