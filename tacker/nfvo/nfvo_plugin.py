@@ -1007,7 +1007,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
 
         
 
-        # 
+        #TODO:
         for vnffg in vnffg_list:
             nfp = super(NfvoPlugin, self).get_nfp(context,
                                               vnffg['forwarding_paths'])
@@ -1019,17 +1019,17 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
                                 ['groups'][vnffg_name]['properties'] \
                                 ['connection_point']:
                     LOG.info('log: %s (%s) neededs to be changed', cp, old_cp_dict[cp])
-                    old_cp = old_cp_dict[cp]
-                    new_cp = new_cp_dict[cp]
-            LOG.info('log: old_cp : %s', old_cp) ###
-            LOG.info('log: new_cp : %s', new_cp) ### 
+                    old_cp_list = list(old_cp_dict[cp])
+                    new_cp_list = list(new_cp_dict[cp])
+            LOG.info('log: old_cp_list : %s', old_cp_list) ###
+            LOG.info('log: new_cp_list : %s', new_cp_list) ### 
             vim_obj = self._get_vim_from_vnf(context,
                                     list(vnffg['vnf_mapping'].values())[0])
             driver_type = vim_obj['type']
             result = self._vim_drivers.invoke(
                         driver_type, 'heal_chain', 
                         chain_id=sfc['instance_id'], vnf=vnf_dict, 
-                        old_cp_list=old_cp, new_cp_list=new_cp,
+                        old_cp_list=old_cp_list, new_cp_list=new_cp_list,
                         auth_attr=vim_obj['auth_cred'])
 
             #vnffg_id = vnffg['id']
