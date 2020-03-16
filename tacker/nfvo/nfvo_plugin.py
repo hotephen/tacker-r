@@ -1005,8 +1005,13 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         vnffg_list = super(NfvoPlugin, self).get_vnffgs_from_vnf(context, vnf_id)
         LOG.info('vnffg_list %s', vnffg_list)
 
+        
+
         # 
         for vnffg in vnffg_list:
+            nfp = super(NfvoPlugin, self).get_nfp(context,
+                                              vnffg['forwarding_paths'])
+            sfc = super(NfvoPlugin, self).get_sfc(context, nfp['chain_id'])
             vnffg_name = list(vnffg['attributes']['vnffgd']['topology_template'] \
                                 ['groups'].keys())[0]
             for cp in old_cp_dict.keys():
@@ -1016,22 +1021,26 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
                     LOG.info('log: %s (%s) neededs to be changed', cp, old_cp_dict[cp])
                     old_cp = old_cp_dict[cp]
                     new_cp = new_cp_dict[cp]
-        LOG.info('log: old_cp : %s', old_cp) ###
-        LOG.info('log: new_cp : %s', new_cp) ###
+            LOG.info('log: old_cp : %s', old_cp) ###
+            LOG.info('log: new_cp : %s', new_cp) ### 
+            vim_obj = self._get_vim_from_vnf(context,
+                                    list(vnffg['vnf_mapping'].values())[0])
+            driver_type = vim_obj['type']
+            result = self._vim_drivers.invoke(
+                        driver_type, 'heal_chain', 
+                        chain_id=sfc['instance_id'], vnf=vnf_dict, 
+                        old_cp_list=old_cp, new_cp_list=new_cp,
+                        auth_attr=vim_obj['auth_cred'])
+
             #vnffg_id = vnffg['id']
             #LOG.debug('log: VNFFG %s', vnffg) ###
             #vnf_mapping_old = vnffg['vnf_mapping']
             #LOG.info('log: vnffg["vnf_mapping"] is %s', vnffg['vnf_mapping']) ###
-        #     vim_obj = self._get_vim_from_vnf(context,
-        #                             list(vnffg['vnf_mapping'].values())[0])
-        #     driver_type = vim_obj['type']
+            
+        #     
         #         for vnfd, vnf in vnf_mapping_old.items():
         #         if vnf == vnf_id:
-        #             result = self._vim_drivers.invoke(
-        #                 driver_type, 'heal_chain', 
-        #                 chain_id=sfc['instance_id'], vnf=vnf_dict, 
-        #                 old_cp_list=old_cp_list, new_cp_list=new_cp_list,
-        #                 auth_attr=vim_obj['auth_cred'])
+        #             
 
         #             old_cp_list = 
         #             #vnf_mapping_update[vnfd] = new_vnf_id
