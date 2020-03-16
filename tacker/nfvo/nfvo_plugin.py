@@ -994,12 +994,12 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         LOG.info('NFVO start healing VNFFG which has respawned VNF %s', vnf_id)
         old_cp_list = []
         new_cp_list = []
-        for cp_name, cp_id in old_cp_dict.items():
-            old_cp_list.append(cp_id)
-        for cp_name, cp_id in new_cp_dict.items():
-            new_cp_list.append(cp_id)
-        LOG.info('old_cp_list : %s', old_cp_list)
-        LOG.info('new_cp_list : %s', new_cp_list)
+        # for cp_name, cp_id in old_cp_dict.items():
+        #     old_cp_list.append(cp_id)
+        # for cp_name, cp_id in new_cp_dict.items():
+        #     new_cp_list.append(cp_id)
+        # LOG.info('old_cp_list : %s', old_cp_list)
+        # LOG.info('new_cp_list : %s', new_cp_list)
         
         # Get the list of vnffgs which include the respawned VNF
         vnffg_list = super(NfvoPlugin, self).get_vnffgs_from_vnf(context, vnf_id)
