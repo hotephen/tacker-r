@@ -645,16 +645,15 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
         # Find old-port-pair
         for pp in port_pairs_list['port_pairs']:
             if vnf['name']+'-connection-points' == pp['name']:
-                target_pp_id = pp['id']    
-                target_pp_dict = neutronclient_.port_pair_show(target_pp_id)
-                LOG.info('log: target_ppg_dict : %s', target_pp_dict)
+                old_pp_id = pp['id']    
+                LOG.info('log: old_pp_id : %s', old_pp_id)
 
         # Find port-pair-group and delete old port-pair
         if vnf['name'] in old_ppgs_dict:
             target_ppg_id = old_ppgs_dict[vnf['name']]
             target_ppg_dict = neutronclient_.port_pair_group_show(target_ppg_id)
             LOG.info('log: target_ppg_dict : %s', target_ppg_dict)
-            #target_ppg_dict['port_pairs'].remove(target_pp_id)
+            #target_ppg_dict['port_pairs'].remove(old_pp_id)
 
         # Create new port-pair
         num_cps = len(new_cp_list)
