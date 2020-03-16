@@ -668,7 +668,7 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
         port_pair_id = neutronclient_.port_pair_create(port_pair)
 
         target_ppg_dict['port_pairs'].append(port_pair_id)
-        ppg = neutronclient_.port_pair_group_update(ppg_id=updating_ppg_id) 
+        ppg = neutronclient_.port_pair_group_update(ppg_id=target_ppg_id) 
         
         return ppg
 
