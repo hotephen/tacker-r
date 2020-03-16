@@ -1005,8 +1005,6 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
         vnffg_list = super(NfvoPlugin, self).get_vnffgs_from_vnf(context, vnf_id)
         LOG.info('vnffg_list %s', vnffg_list)
 
-        
-
         #TODO:
         for vnffg in vnffg_list:
             nfp = super(NfvoPlugin, self).get_nfp(context,
@@ -1019,8 +1017,9 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
                                 ['groups'][vnffg_name]['properties'] \
                                 ['connection_point']:
                     LOG.info('log: %s (%s) neededs to be changed', cp, old_cp_dict[cp])
-                    old_cp_list = list(old_cp_dict[cp])
-                    new_cp_list = list(new_cp_dict[cp])
+
+                    old_cp_list.append(old_cp_dict[cp])
+                    new_cp_list.append(new_cp_dict[cp])
             LOG.info('log: old_cp_list : %s', old_cp_list) ###
             LOG.info('log: new_cp_list : %s', new_cp_list) ### 
             vim_obj = self._get_vim_from_vnf(context,
