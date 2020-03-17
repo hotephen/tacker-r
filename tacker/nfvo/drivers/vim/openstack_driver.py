@@ -617,6 +617,7 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
     #TODO:
     def heal_chain(self, chain_id, vnf, old_cp_list, new_cp_list,
                      symmetrical=None, auth_attr=None):
+        #TODO: delete old_cp_list
 
         if not auth_attr:
             LOG.warning("auth information required for n-sfc driver")
@@ -663,7 +664,7 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
         port_pair['description'] = 'port pair for ' + vnf['name']
         port_pair['ingress'] = ingress
         port_pair['egress'] = egress
-        port_pair_id = neutronclient_.port_pair_create(port_pair) # Error:fix(net_mgmt=>net0)
+        port_pair_id = neutronclient_.port_pair_create(port_pair) #
         
         LOG.info('log: port_pair_id : %s', port_pair)
         LOG.info('log: port_pair_id : %s', port_pair_id)
