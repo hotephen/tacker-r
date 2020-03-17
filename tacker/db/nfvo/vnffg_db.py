@@ -303,33 +303,29 @@ class VnffgPluginDbMixin(vnffg.VNFFGPluginBase, db_base.CommonDbMixin):
         return self._get_collection(context, VnffgChain,
                                     self._make_chain_dict,
                                     filters=filters, fields=fields)
-
+    #TODO:
     def get_vnffgs_from_vnf(self, context, vnf_id):
         vnffgs =  self.get_vnffgs(context)
         vnffg_list = list()
         for vnffg_info in vnffgs:
 #            template_id = vnffg_info['vnffgd_id']
 #            LOG.info('VNFFGD ID: %s', template_id) #will be deleted
-
- #           with context.session.begin(subtransactions=True):
- #               template_db = self._get_resource(context, VnffgTemplate, template_id)
- #               LOG.info('vnffg template %s', template_db) #log.debug will be changed\
- #
- #               if vnffg.get('attributes') and  vnffg['attributes'].get('param_values'):
- #                   vnffg_param = vnffg['attributes']
- #                   vnffgd_topology_template = template_db.template['vnffgd']['topology_template']
- #                   self._process_parameterized_template(vnffg_param, vnffgd_topology_template)
- #                   template_db.template['vnffgd']['topology_template'] =  vnffgd_topology_template
-
- #               vnf_members = self._get_vnffg_property(template_db.template, 'constituent_vnfs')
+#           with context.session.begin(subtransactions=True):
+#               template_db = self._get_resource(context, VnffgTemplate, template_id)
+#               LOG.info('vnffg template %s', template_db) #log.debug will be changed\
+#               if vnffg.get('attributes') and  vnffg['attributes'].get('param_values'):
+#                   vnffg_param = vnffg['attributes']
+#                   vnffgd_topology_template = template_db.template['vnffgd']['topology_template']
+#                   self._process_parameterized_template(vnffg_param, vnffgd_topology_template)
+#                   template_db.template['vnffgd']['topology_template'] =  vnffgd_topology_template
+#               vnf_members = self._get_vnffg_property(template_db.template, 'constituent_vnfs')
 #            LOG.info('Constituent VNFs: %s', vnf_members)
 #            vnf_mapping = self._get_vnf_mapping(context, vnffg.get('vnf_mapping'), vnf_members)
             vnf_mapping = vnffg_info['vnf_mapping']
             for vnfd, vnf_id_ in vnf_mapping.items():
-                LOG.info('vnf_id %s vs vnf_id %s', vnf_id_, vnf_id)
                 if vnf_id_ == vnf_id:
                     vnffg_list.append(vnffg_info)
-                LOG.info('vnffg_list is %d', vnffg_list)
+                LOG.info('vnffg_list is %s', vnffg_list)
         return vnffg_list
 
     def _update_template_params(self, original, paramvalues, param_matched):

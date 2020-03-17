@@ -617,6 +617,7 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
     #TODO:
     def heal_chain(self, chain_id, vnf, old_cp_list, new_cp_list,
                      symmetrical=None, auth_attr=None):
+                     
         if not auth_attr:
             LOG.warning("auth information required for n-sfc driver")
             return None

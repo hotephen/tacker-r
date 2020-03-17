@@ -1012,14 +1012,14 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
             sfc = super(NfvoPlugin, self).get_sfc(context, nfp['chain_id'])
             vnffg_name = list(vnffg['attributes']['vnffgd']['topology_template'] \
                                 ['groups'].keys())[0]
-            for cp in old_cp_dict.keys():
-                if cp in vnffg['attributes']['vnffgd']['topology_template'] \
+            for cp_name in old_cp_dict.keys():
+                if cp_name in vnffg['attributes']['vnffgd']['topology_template'] \
                                 ['groups'][vnffg_name]['properties'] \
                                 ['connection_point']:
-                    LOG.info('log: %s (%s) neededs to be changed', cp, old_cp_dict[cp])
+                    LOG.info('log: %s (%s) neededs to be changed', cp_name, old_cp_dict[cp_name])
 
-                    old_cp_list.append(old_cp_dict[cp])
-                    new_cp_list.append(new_cp_dict[cp])
+                    old_cp_list.append(old_cp_dict[cp_name])
+                    new_cp_list.append(new_cp_dict[cp_name])
             LOG.info('log: old_cp_list : %s', old_cp_list) ###
             LOG.info('log: new_cp_list : %s', new_cp_list) ### 
             vim_obj = self._get_vim_from_vnf(context,
