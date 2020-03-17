@@ -680,7 +680,7 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
         port_pair['description'] = 'port pair for ' + vnf['name']
         port_pair['ingress'] = ingress
         port_pair['egress'] = egress
-        port_pair_id = neutronclient_.port_pair_create(port_pair)
+        port_pair_id = neutronclient_.port_pair_create(port_pair) #Error
         
         LOG.info('log: port_pair_id : %s', port_pair)
         LOG.info('log: port_pair_id : %s', port_pair_id)
