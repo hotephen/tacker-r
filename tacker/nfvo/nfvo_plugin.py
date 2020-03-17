@@ -1030,7 +1030,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
                         chain_id=sfc['instance_id'], vnf=vnf_dict, 
                         old_cp_list=old_cp_list, new_cp_list=new_cp_list,
                         auth_attr=vim_obj['auth_cred'])
-
+            LOG.info('log: ppg is updated %s', result) ### 
             #vnffg_id = vnffg['id']
             #LOG.debug('log: VNFFG %s', vnffg) ###
             #vnf_mapping_old = vnffg['vnf_mapping']
