@@ -643,7 +643,12 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
         # Find old_ppg_id
         if vnf['name'] in old_ppgs_dict:
             old_ppg_id = old_ppgs_dict[vnf['name']]
-        
+
+        # Find old_pp
+        for port_pair in port_pairs_list['port_pairs']:
+            if vnf['name'] == port_pair['name'].split('-')[0]:
+                old_port_pair_id = port_pair['id']  
+
         # Create new port-pair
         num_cps = len(new_cp_list)
         if num_cps not in [1, 2]:
@@ -678,7 +683,10 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
         ppg = neutronclient_.port_pair_group_update(ppg_id=old_ppg_id, 
                                                    ppg_dict=updated_ppg) 
         
-        # TODO: To delete old_port_pair
+        # Delete old_port_pair
+        neutronclient_.port_pair_delete(old_port_pair_id)
+        
+        #TODO: Delete old_port
         return ppg
 
     def delete_chain(self, chain_id, auth_attr=None):
