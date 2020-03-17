@@ -617,9 +617,6 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
     #TODO:
     def heal_chain(self, chain_id, vnf, old_cp_list, new_cp_list,
                      symmetrical=None, auth_attr=None):
-        #old_cp_list = [cp_id1, cp_id2]
-        #new_cp_list = [cp_id1, cp_id2]
-        LOG.info('heal_chain')###
         if not auth_attr:
             LOG.warning("auth information required for n-sfc driver")
             return None
@@ -628,7 +625,6 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
         port_pairs_list = neutronclient_.port_pair_list()
         port_pair_groups_list = neutronclient_.port_pair_group_list()
         port_chains_list = neutronclient_.port_chain_list()
-        new_ppgs = []
         pc_info = neutronclient_.port_chain_show(chain_id)
         old_ppgs = pc_info['port_chain']['port_pair_groups']
         old_ppgs_dict = {neutronclient_.port_pair_group_show(ppg_id)
@@ -649,11 +645,18 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
                 LOG.info('log: old_pp_id : %s', old_pp_id)
 
         # Find port-pair-group and delete old port-pair
-        if vnf['name'] in old_ppgs_dict:
-            target_ppg_id = old_ppgs_dict[vnf['name']]
+        try:
+            if vnf['name'] in old_ppgs_dict:
+                target_ppg_id = old_ppgs_dict[vnf['name']]
             target_ppg_dict = neutronclient_.port_pair_group_show(target_ppg_id)
             LOG.info('log: target_ppg_dict : %s', target_ppg_dict)
-            #target_ppg_dict['port_pairs'].remove(old_pp_id)
+            target_ppg_dict['port_pairs'].remove(old_pp_id)
+            LOG.info('log: modified target_ppg_dict : %s', target_ppg_dict)
+        except Exception as e:
+            LOG.warning("failed to delete old port-pair due to %s", e)
+            if not old_pp_id in target_ppg_dict['port_pairs']:
+                target_ppg_dict['port_pairs'].append(old_pp_id)
+            raise e
 
         # Create new port-pair
         num_cps = len(new_cp_list)
@@ -670,17 +673,19 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
             ingress = new_cp_list[0]
             egress = new_cp_list[1]
         port_pair = {}
-        port_pair['name'] = vnf['name'] + 'respawned-connection-points'
-        port_pair['description'] = 'port pair for' + vnf['name']
+        port_pair['name'] = vnf['name'] + '-respawned-connection-points'
+        port_pair['description'] = 'port pair for ' + vnf['name']
         port_pair['ingress'] = ingress
         port_pair['egress'] = egress
-        #port_pair_id = neutronclient_.port_pair_create(port_pair)
-        LOG.info('log: port_pair : %s', port_pair)
+        port_pair_id = neutronclient_.port_pair_create(port_pair)
+        
+        LOG.info('log: port_pair_id : %s', port_pair)
+        LOG.info('log: port_pair_id : %s', port_pair_id)
 
         # Append new port-pair to port-pair-group
-        # target_ppg_dict['port_pairs'].append(port_pair_id)
-        # ppg = neutronclient_.port_pair_group_update(ppg_id=target_ppg_id, 
-        #                                           ppg_dict=target_ppg_dict) 
+        target_ppg_dict['port_pairs'].append(port_pair_id)
+        ppg = neutronclient_.port_pair_group_update(ppg_id=target_ppg_id, 
+                                                   ppg_dict=target_ppg_dict) 
         
         #return ppg
 
@@ -1051,7 +1056,7 @@ class NeutronClient(object):
     ###TODO:
     def port_pair_group_update(self, ppg_id, ppg_dict):
         try:
-            ppg = self.client.update_port_pair_group(
+            ppg = self.client.update_sfc_port_pair_group(
                 ppg_id, {'port_pair_group': ppg_dict})
         except nc_exceptions.BadRequest as e:
             LOG.warning('update port pair group returns %s', e)
