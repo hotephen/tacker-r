@@ -674,9 +674,10 @@ class OpenStack_Driver(abstract_vim_driver.VimAbstractDriver,
         updated_ppg['description'] = 'respawned port pair group for ' + vnf['name']
         updated_ppg['port_pairs'] = []
         updated_ppg['port_pairs'].append(port_pair_id)
-        ppg = neutronclient_.port_pair_group_update(ppg_id=target_ppg_id, 
+        ppg = neutronclient_.port_pair_group_update(ppg_id=old_ppg_id, 
                                                    ppg_dict=updated_ppg) 
         
+        # TODO: To delete old_port_pair
         return ppg
 
     def delete_chain(self, chain_id, auth_attr=None):
