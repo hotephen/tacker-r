@@ -96,9 +96,6 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
             self.connection.create_consumer(topics.TOPIC_ACTION_KILL,
                                             self.endpoints, fanout=False,
                                             host=vnf_id)
-            #LOG.info('log: self.endpoints = %s', self.endpoints) ###
-            #LOG.info('log: self.connection = %s', self.connection) ###
-            #LOG.info('log: create_consumer completed') ###
             return self.connection.consume_in_threads()
         
         def get_connection_points(vnf_dict, vim_id):
@@ -127,7 +124,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
 
         old_cp_dict = get_connection_points(vnf_dict, vim_id)
 
-        # 1.Respawn Action
+        # Respawn
         if plugin._mark_vnf_dead(vnf_dict['id']):
             _update_failure_count()
             vim_res = _fetch_vim(vim_id)
@@ -143,44 +140,35 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
                 vnf_dict['attributes'].pop('alarming_policy')
                 _respawn_vnf()        
         
-
-        # 2. Notify and Healing Action        
+        # Notify and heal vnffg        
         new_vnf_id = updated_vnf['id']
-        LOG.info('log : new_vnf %s is respawned and needs to notify', new_vnf_id)
-        
-        # 2.1 Start rpc connection
+        LOG.debug('log : new_vnf %s is respawned and needs to notify', \
+                  new_vnf_id)
+        # Start rpc connection
         try:
             rpc.init_action_rpc(cfg.CONF) ###
             servers = start_rpc_listeners(new_vnf_id)
         except Exception:
             LOG.exception('failed to start rpc')
             return 'FAILED'
-
-        # 2.2 Call 'vnf_respawning_event' method via ConductorRPC
+        # Call 'vnf_respawning_event' method via ConductorRPC #TODO:
         try:
             target = AutoHealingRPC.AutoHealingRPC.target
             rpc_client = rpc.get_client(target)
             cctxt = rpc_client.prepare()
-
-            # Get new_VNF status from VNF_DB
+            # Get new_VNF status from vnfm_db
             status = cctxt.call(t_context.get_admin_context_without_session(),
                                 'vnf_respawning_event', vnf_id=new_vnf_id)
-            #LOG.info('log: new_vnf status = %s', status) ###
             if status == constants.ACTIVE:
-                # Get new_VNF CP from Heat API
                 new_cp_dict = get_connection_points(updated_vnf, vim_id)
-                # Call vnffg-healing function
                 nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
-                LOG.info('NFVO_plugin is called')
-                LOG.info('old_cp_dict is %s', old_cp_dict)
-                LOG.info('new_cp_dict is %s', new_cp_dict)
-                nfvo_plugin.mark_event(context, vnf_dict, old_cp_dict, new_cp_dict)
-
+                LOG.debug('old_cp_dict is %s', old_cp_dict)
+                LOG.debug('new_cp_dict is %s', new_cp_dict)
+                nfvo_plugin.heal_vnffg(context, vnf_dict, old_cp_dict, new_cp_dict)
         except Exception:
             LOG.exception('failed to call rpc')
             return 'FAILED'
 
-        # 2.3 Stop rpc connection
         for server in servers:
             try:
                 server.stop()
