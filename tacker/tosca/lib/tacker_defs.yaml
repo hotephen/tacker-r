@@ -251,6 +251,10 @@ policy_types:
     derived_from: tosca.policies.tacker.Failure
     action: notify  
 
+  tosca.policies.tacker.Failure.NotifyScaling:
+    derived_from: tosca.policies.tacker.Failure
+    action: notify_scaling  
+
   tosca.policies.tacker.Monitoring:
     derived_from: tosca.policies.Root
     properties:

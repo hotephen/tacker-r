@@ -124,7 +124,7 @@ class VNFMPlugin(vnfm_db.VNFMPluginDb, VNFMMgmtMixin):
 
     OPTS_POLICY_ACTION = [
         cfg.ListOpt(
-            'policy_action', default=['autoscaling', 'respawn',
+            'policy_action', default=['autoscaling', 'respawn', 'notify_scaling'
                                       'notify', 'vdu_autoheal', 'log', 'log_and_kill'],
             help=_('Hosting vnf drivers tacker plugin will use')),
     ]
