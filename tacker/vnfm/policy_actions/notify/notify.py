@@ -141,7 +141,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
                 _respawn_vnf()        
         
         # Notify and heal vnffg        
-        new_vnf_id = updated_vnf['id']
+        new_vnf_id = updated_vnf['id'] ### To be deleted
         LOG.debug('log : new_vnf %s is respawned and needs to notify', \
                   new_vnf_id)
         # Start rpc connection
@@ -151,7 +151,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         except Exception:
             LOG.exception('failed to start rpc')
             return 'FAILED'
-        # Call 'vnf_respawning_event' method via ConductorRPC #TODO:
+        # Call 'vnf_respawning_event' method via ConductorRPC
         try:
             target = AutoHealingRPC.AutoHealingRPC.target
             rpc_client = rpc.get_client(target)
