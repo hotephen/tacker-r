@@ -27,6 +27,7 @@ from tacker.common import topics
 from tacker.conductor.conductorrpc import AutoHealingRPC
 from tacker import context as t_context
 
+from tacker.vnfm.policy_actions.respawn.respawn import VNFActionRespawn
 
 LOG = logging.getLogger(__name__)
 
@@ -59,6 +60,11 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         vim_id = vnf_dict['vim_id']
         attributes = vnf_dict['attributes']
         LOG.info('notify action is called')
+
+        VNFActionRespawn.execute_action(self, plugin, context, vnf_dict, args)
+
+        LOG.info('respawn is completed')
+
 
         # def _update_failure_count():
         #     failure_count = int(attributes.get('failure_count', '0')) + 1
