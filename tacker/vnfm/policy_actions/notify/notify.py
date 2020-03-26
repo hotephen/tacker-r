@@ -61,7 +61,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         attributes = vnf_dict['attributes']
         LOG.info('notify action is called')
 
-        VNFActionRespawn.execute_action(self, plugin, context, vnf_dict, args)
+        VNFActionRespawn.execute_action(VNFActionRespawn, plugin, context, vnf_dict, args)
 
         LOG.info('respawn is completed')
 
