@@ -146,6 +146,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         #         vnf_dict['attributes'].pop('alarming_policy')
         #         _respawn_vnf()        
         
+<<<<<<< HEAD
         # # Notify and heal vnffg        
         # new_vnf_id = updated_vnf['id'] ### To be deleted
         # LOG.debug('log : new_vnf %s is respawned and needs to notify', \
@@ -181,3 +182,40 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         #     except Exception:
         #         LOG.exception('failed to stop rpc connection for vnf %s',
         #                      new_vnf_id)
+=======
+        # Notify and heal vnffg        
+        new_vnf_id = updated_vnf['id']
+        LOG.debug('log : new_vnf %s is respawned and needs to notify', \
+                  new_vnf_id)
+        # Start rpc connection
+        try:
+            rpc.init_action_rpc(cfg.CONF) ###
+            servers = start_rpc_listeners(new_vnf_id)
+        except Exception:
+            LOG.exception('failed to start rpc')
+            return 'FAILED'
+        # Call 'vnf_respawning_event' method via ConductorRPC #TODO:
+        try:
+            target = AutoHealingRPC.AutoHealingRPC.target
+            rpc_client = rpc.get_client(target)
+            cctxt = rpc_client.prepare()
+            # Get new_VNF status from vnfm_db
+            status = cctxt.call(t_context.get_admin_context_without_session(),
+                                'vnf_respawning_event', vnf_id=new_vnf_id)
+            if status == constants.ACTIVE:
+                new_cp_dict = get_connection_points(updated_vnf, vim_id)
+                nfvo_plugin = manager.TackerManager.get_service_plugins()['NFVO']
+                LOG.debug('old_cp_dict is %s', old_cp_dict)
+                LOG.debug('new_cp_dict is %s', new_cp_dict)
+                nfvo_plugin.heal_vnffg(context, vnf_dict, old_cp_dict, new_cp_dict)
+        except Exception:
+            LOG.exception('failed to call rpc')
+            return 'FAILED'
+
+        for server in servers:
+            try:
+                server.stop()
+            except Exception:
+                LOG.exception('failed to stop rpc connection for vnf %s',
+                             new_vnf_id)
+>>>>>>> parent of 986642ea... commit
