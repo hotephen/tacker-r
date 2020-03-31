@@ -59,6 +59,7 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
         vim_id = vnf_dict['vim_id']
         attributes = vnf_dict['attributes']
         LOG.info('vnf %s is dead and needs to be respawned', vnf_id)
+        LOG.info('LOG: vnf %s Healing is Started', vnf_id)
 
         def _update_failure_count():
             failure_count = int(attributes.get('failure_count', '0')) + 1
@@ -165,6 +166,8 @@ class VNFActionNotify(abstract_action.AbstractPolicyAction):
                 LOG.debug('old_cp_dict is %s', old_cp_dict)
                 LOG.debug('new_cp_dict is %s', new_cp_dict)
                 nfvo_plugin.heal_vnffg(context, vnf_dict, old_cp_dict, new_cp_dict)
+                LOG.info('LOG: vnf %s Healing is Completed', vnf_id)
+
         except Exception:
             LOG.exception('failed to call rpc')
             return 'FAILED'
