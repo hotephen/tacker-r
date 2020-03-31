@@ -991,11 +991,11 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
     @log.log ##FIXME:
     def heal_vnffg(self, context, vnf_dict, old_cp_dict, new_cp_dict):
         vnf_id = vnf_dict['id']
-        LOG.debug('NFVO start healing VNFFG which has respawned VNF %s', vnf_id)
+        LOG.info('LOG: NFVO start healing VNFFG which has respawned VNF %s', vnf_id) ###
         new_cp_list = []
         # Get the list of vnffgs which include the respawned VNF
         vnffg_list = super(NfvoPlugin, self).get_vnffgs_from_vnf(context, vnf_id)
-        LOG.info('LOG: vnffg_list %s', vnffg_list)
+        LOG.info('LOG: VNFFGs that include %s are VNFFG1 ', vnf_dict['name']) ###
         for vnffg in vnffg_list:
             nfp = super(NfvoPlugin, self).get_nfp(context,
                                               vnffg['forwarding_paths'])
@@ -1014,7 +1014,7 @@ class NfvoPlugin(nfvo_db_plugin.NfvoPluginDb, vnffg_db.VnffgPluginDbMixin,
             vim_obj = self._get_vim_from_vnf(context,
                                     list(vnffg['vnf_mapping'].values())[0])
             driver_type = vim_obj['type']
-            LOG.info('LOG: Healing vnffg %s', sfc['instance_id'])
+            LOG.info('LOG: Healing chain that has id %s', sfc['instance_id']) ###
             ppg = self._vim_drivers.invoke(
                         driver_type, 'heal_chain', 
                         chain_id=sfc['instance_id'], vnf=vnf_dict, 
